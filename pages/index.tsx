@@ -1,19 +1,36 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { MouseEventHandler } from "react";
 
 const Home: NextPage = () => {
-  const [text, setText] = useState("");
+  const handleClick = (endpoint: string): MouseEventHandler => {
+    const handler: MouseEventHandler = async () => {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "test@mail.com",
+          password: "testpass",
+        }),
+      });
+      const data = await res.json();
 
-  const handleClick = async () => {
-    const res = await fetch("/api/auth/me");
-    setText(await res.text());
+      console.log(data);
+    };
+    return handler;
   };
 
   return (
-    <div>
-      <button onClick={handleClick}>Get it</button>
-      {text}
-    </div>
+    <>
+      Tests
+      <div>
+        <button onClick={handleClick("/api/auth/signup")}>Signup</button>
+        <button onClick={handleClick("/api/auth/login")}>Login</button>
+        <button onClick={handleClick("/api/auth/me")}>Me</button>
+        <button onClick={handleClick("/api/auth/logout")}>Logout</button>
+      </div>
+    </>
   );
 };
 

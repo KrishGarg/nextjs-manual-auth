@@ -34,14 +34,12 @@ const createTokens: CreateTokensType = (data) => {
   };
 };
 
-interface DecodeTokenParam {
-  token: string;
-  type: "access" | "refresh";
-}
+type DecodeTokenType = (
+  token: string,
+  type: "access" | "refresh"
+) => JwtPayload;
 
-type DecodeTokenType = (data: DecodeTokenParam) => JwtPayload;
-
-const decodeToken: DecodeTokenType = ({ token, type }) => {
+const decodeToken: DecodeTokenType = (token, type) => {
   if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
     throw new Error("No access or refresh token.");
   }

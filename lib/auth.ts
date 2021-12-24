@@ -23,7 +23,6 @@ const login: LoginType = async (email, password) => {
 
   const tokens = createTokens({
     id: user.id,
-    email: user.email,
   });
 
   return tokens;
@@ -53,7 +52,6 @@ const signup: SignupType = async (email, password) => {
 
   const tokens = createTokens({
     id: newUser.id,
-    email: newUser.email,
   });
 
   return tokens;
