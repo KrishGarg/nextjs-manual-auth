@@ -1,4 +1,6 @@
-import { sign, verify, JwtPayload } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { NextApiResponse } from "next";
+import { ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from "@/lib/constants";
 
 type CreateAccessTokenType = (data: object) => string;
 
@@ -7,7 +9,9 @@ const createAccessToken: CreateAccessTokenType = (data) => {
     throw new Error("No access token secret found.");
   }
 
-  return sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  return sign(data, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: ACCESS_TOKEN_MAX_AGE,
+  });
 };
 
 type CreateRefreshTokenType = (data: object) => string;
@@ -17,7 +21,9 @@ const createRefreshToken: CreateRefreshTokenType = (data) => {
     throw new Error("No refresh token secret found.");
   }
 
-  return sign(data, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1 week" });
+  return sign(data, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: REFRESH_TOKEN_MAX_AGE,
+  });
 };
 
 interface Tokens {
@@ -34,10 +40,11 @@ const createTokens: CreateTokensType = (data) => {
   };
 };
 
-type DecodeTokenType = (
-  token: string,
-  type: "access" | "refresh"
-) => JwtPayload;
+interface Payload extends JwtPayload {
+  id: string;
+}
+
+type DecodeTokenType = (token: string, type: "access" | "refresh") => Payload;
 
 const decodeToken: DecodeTokenType = (token, type) => {
   if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
@@ -49,8 +56,22 @@ const decodeToken: DecodeTokenType = (token, type) => {
       ? process.env.ACCESS_TOKEN_SECRET
       : process.env.REFRESH_TOKEN_SECRET;
 
-  return verify(token, secret) as JwtPayload;
+  return verify(token, secret) as Payload;
 };
 
-export { createAccessToken, createRefreshToken, createTokens, decodeToken };
-export type { Tokens };
+const decodeAccessTokenOrUndef = (accessToken: string) => {
+  try {
+    return decodeToken(accessToken, "access");
+  } catch (e) {
+    return undefined;
+  }
+};
+
+export {
+  createAccessToken,
+  createRefreshToken,
+  createTokens,
+  decodeToken,
+  decodeAccessTokenOrUndef,
+};
+export type { Tokens, Payload };

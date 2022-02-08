@@ -1,6 +1,11 @@
 import { serialize, CookieSerializeOptions } from "cookie";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Tokens } from "./tokens";
+import {
+  ACCESS_TOKEN_COOKIE_NAME,
+  REFRESH_TOKEN_COOKIE_NAME,
+  ACCESS_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_MAX_AGE,
+} from "@/lib/constants";
 
 interface SetCookiesParams {
   res: NextApiResponse;
@@ -39,10 +44,10 @@ export const setAccessTokenCookie: SetAccessTokenCookiesType = (
     res,
     cookies: [
       {
-        name: "access-token",
+        name: ACCESS_TOKEN_COOKIE_NAME,
         value: accessToken,
         cookieSerializeOptions: {
-          maxAge: 60 * 15, // 15 minutes
+          maxAge: ACCESS_TOKEN_MAX_AGE,
           httpOnly: true,
           secure: true,
         },
@@ -63,19 +68,19 @@ export const setAccessAndRefreshTokenCookies: SetAccessAndRefreshTokenCookiesTyp
       res,
       cookies: [
         {
-          name: "access-token",
+          name: ACCESS_TOKEN_COOKIE_NAME,
           value: accessToken,
           cookieSerializeOptions: {
-            maxAge: 60 * 15, // 15 minutes
+            maxAge: ACCESS_TOKEN_MAX_AGE,
             httpOnly: true,
             secure: true,
           },
         },
         {
-          name: "refresh-token",
+          name: REFRESH_TOKEN_COOKIE_NAME,
           value: refreshToken,
           cookieSerializeOptions: {
-            maxAge: 60 * 60 * 24 * 7, // 1 week
+            maxAge: REFRESH_TOKEN_MAX_AGE,
             httpOnly: true,
             secure: true,
           },
@@ -92,7 +97,7 @@ export const deleteAccessAndRefreshTokenCookies: DeleteAccessAndRefreshTokenCook
       res,
       cookies: [
         {
-          name: "access-token",
+          name: ACCESS_TOKEN_COOKIE_NAME,
           value: "",
           cookieSerializeOptions: {
             expires: new Date(1),
@@ -101,7 +106,7 @@ export const deleteAccessAndRefreshTokenCookies: DeleteAccessAndRefreshTokenCook
           },
         },
         {
-          name: "refresh-token",
+          name: REFRESH_TOKEN_COOKIE_NAME,
           value: "",
           cookieSerializeOptions: {
             expires: new Date(1),
@@ -122,7 +127,7 @@ type GetTokensFromCookiesType = (req: NextApiRequest) => NullibleTokens;
 
 export const getTokensFromCookies: GetTokensFromCookiesType = (req) => {
   return {
-    accessToken: req.cookies["access-token"] ?? undefined,
-    refreshToken: req.cookies["refresh-token"] ?? undefined,
+    accessToken: req.cookies[ACCESS_TOKEN_COOKIE_NAME] ?? undefined,
+    refreshToken: req.cookies[REFRESH_TOKEN_COOKIE_NAME] ?? undefined,
   };
 };
