@@ -7,6 +7,7 @@ import {
 } from "@/lib/easyCookie";
 import { ApiData } from "@/lib/constants";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { getClientIp } from "request-ip";
 
 const handler: NextApiHandler<ApiData> = async (req, res) => {
   try {
@@ -44,7 +45,12 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
     let tokens: Tokens;
 
     try {
-      tokens = await signup(email, password);
+      tokens = await signup(
+        email,
+        password,
+        req.headers["user-agent"],
+        getClientIp(req)
+      );
     } catch (e) {
       let message = "Account Already Exists";
       if (e instanceof Error) {

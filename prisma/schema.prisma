@@ -17,4 +17,5 @@ model User {
 type LoggedInClient {
   tokenId String
   client  String
+  ip      String
 }

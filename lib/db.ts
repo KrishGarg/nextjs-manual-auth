@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { LoggedInClient, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -24,4 +24,43 @@ const findUserById = async (id: string) =>
     },
   });
 
-export { findUserByEmail, createUser, findUserById };
+const addClientDataToUser = async (
+  userId: string,
+  ip: string,
+  userAgent: string,
+  tokenId: string
+) =>
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      tokens: {
+        push: {
+          client: userAgent,
+          tokenId,
+          ip,
+        },
+      },
+    },
+  });
+
+const overrideTokens = async (userId: string, newTokens: LoggedInClient[]) =>
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      tokens: {
+        set: newTokens,
+      },
+    },
+  });
+
+export {
+  findUserByEmail,
+  createUser,
+  findUserById,
+  addClientDataToUser,
+  overrideTokens,
+};

@@ -14,7 +14,7 @@ const handleClick = (
       body:
         method !== "GET"
           ? JSON.stringify({
-              email: "test@mail.com",
+              email: "test1@mail.com",
               password: "testpass",
             })
           : undefined,
@@ -37,6 +37,9 @@ const Home: NextPage = () => {
         <button onClick={handleClick("/api/auth/login", "POST")}>Login</button>
         <button onClick={handleClick("/api/auth/me", "GET")}>Me</button>
         <button onClick={handleClick("/api/auth/logout", "GET")}>Logout</button>
+        <button onClick={handleClick("/api/auth/refresh", "POST")}>
+          Refresh Tokens
+        </button>
       </div>
     </>
   );

@@ -1,8 +1,13 @@
 import { JwtPayload, sign, verify } from "jsonwebtoken";
-import { NextApiResponse } from "next";
 import { ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from "@/lib/constants";
+import { nanoid } from "nanoid";
 
-type CreateAccessTokenType = (data: object) => string;
+interface Payload extends JwtPayload {
+  userId: string;
+  tokenId?: string;
+}
+
+type CreateAccessTokenType = (data: Payload) => string;
 
 const createAccessToken: CreateAccessTokenType = (data) => {
   if (!process.env.ACCESS_TOKEN_SECRET) {
@@ -14,16 +19,30 @@ const createAccessToken: CreateAccessTokenType = (data) => {
   });
 };
 
-type CreateRefreshTokenType = (data: object) => string;
+type CreateRefreshTokenType = (data: Payload) => {
+  refreshToken: string;
+  tokenId: string;
+};
 
 const createRefreshToken: CreateRefreshTokenType = (data) => {
   if (!process.env.REFRESH_TOKEN_SECRET) {
     throw new Error("No refresh token secret found.");
   }
 
-  return sign(data, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: REFRESH_TOKEN_MAX_AGE,
-  });
+  const id = nanoid();
+
+  const refreshToken = sign(
+    { ...data, tokenId: id },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: REFRESH_TOKEN_MAX_AGE,
+    }
+  );
+
+  return {
+    refreshToken,
+    tokenId: id,
+  };
 };
 
 interface Tokens {
@@ -31,18 +50,20 @@ interface Tokens {
   refreshToken: string;
 }
 
-type CreateTokensType = (data: object) => Tokens;
+interface TokensWithID extends Tokens {
+  tokenId: string;
+}
+
+type CreateTokensType = (data: Payload) => TokensWithID;
 
 const createTokens: CreateTokensType = (data) => {
+  const { refreshToken, tokenId } = createRefreshToken(data);
   return {
     accessToken: createAccessToken(data),
-    refreshToken: createRefreshToken(data),
+    refreshToken,
+    tokenId,
   };
 };
-
-interface Payload extends JwtPayload {
-  id: string;
-}
 
 type DecodeTokenType = (token: string, type: "access" | "refresh") => Payload;
 

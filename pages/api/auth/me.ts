@@ -39,7 +39,7 @@ const handler: NextApiHandler<Data> = async (req, res) => {
       });
     }
 
-    const user = await findUserById(payload.id);
+    const user = await findUserById(payload.userId);
 
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({

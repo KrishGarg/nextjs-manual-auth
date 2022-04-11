@@ -5,6 +5,8 @@ import {
 } from "@/lib/easyCookie";
 import type { NextApiHandler } from "next";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { decodeToken } from "@/lib/tokens";
+import { findUserById, overrideTokens } from "@/lib/db";
 
 const handler: NextApiHandler<ApiData> = async (req, res) => {
   try {
@@ -20,6 +22,26 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
     if (!refreshToken) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "User isn't logged in",
+        error: true,
+      });
+    }
+
+    try {
+      const { userId, tokenId } = decodeToken(refreshToken, "refresh");
+      if (userId && tokenId) {
+        const user = await findUserById(userId);
+        if (user) {
+          const otherTokens = user.tokens.filter((t) => t.tokenId !== tokenId);
+          await overrideTokens(userId, otherTokens);
+        }
+      }
+    } catch (e) {
+      let message = "Invalid Token";
+      if (e instanceof Error) {
+        message = e.message;
+      }
+      return res.status(StatusCodes.FORBIDDEN).json({
+        message,
         error: true,
       });
     }

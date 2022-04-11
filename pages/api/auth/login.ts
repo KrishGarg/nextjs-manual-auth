@@ -18,12 +18,6 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
       });
     }
 
-    // testing
-    return res.status(200).json({
-      message: `${req.headers["user-agent"]}, ${getClientIp(req)}`,
-      error: false,
-    });
-
     const { email, password }: { email: string; password: string } = req.body;
 
     if (!email || !password) {
@@ -50,11 +44,16 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
 
     let tokens: Tokens;
     try {
-      tokens = await login(email, password, req.headers["user-agent"]);
+      tokens = await login(
+        email,
+        password,
+        req.headers["user-agent"],
+        getClientIp(req)
+      );
     } catch (e) {
       let message = "Incorrect Credentials";
       if (e instanceof Error) {
-        //message = e.message;
+        message = e.message;
       }
 
       return res.status(StatusCodes.FORBIDDEN).json({
