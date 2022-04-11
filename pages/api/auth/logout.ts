@@ -11,7 +11,7 @@ interface Data {
 
 const handler: NextApiHandler<Data> = async (req, res) => {
   if (req.method !== "GET") {
-    return res.status(404).json({
+    return res.status(405).json({
       message: `${req.method} not allowed.`,
       error: true,
     });
@@ -28,7 +28,7 @@ const handler: NextApiHandler<Data> = async (req, res) => {
 
   deleteAccessAndRefreshTokenCookies(res);
   return res.status(200).json({
-    message: "Successfully Deleted",
+    message: "Successfully logged out",
     error: false,
   });
 };

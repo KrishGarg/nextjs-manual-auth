@@ -1,7 +1,10 @@
 import { signup } from "@/lib/auth";
 import { Tokens } from "@/lib/tokens";
 import type { NextApiHandler } from "next";
-import { setAccessAndRefreshTokenCookies } from "@/lib/easyCookie";
+import {
+  getTokensFromCookies,
+  setAccessAndRefreshTokenCookies,
+} from "@/lib/easyCookie";
 
 interface Data {
   message: string;
@@ -11,7 +14,7 @@ interface Data {
 const handler: NextApiHandler<Data> = async (req, res) => {
   try {
     if (req.method !== "POST") {
-      return res.status(404).json({
+      return res.status(405).json({
         message: `${req.method} not allowed.`,
         error: true,
       });
@@ -28,6 +31,15 @@ const handler: NextApiHandler<Data> = async (req, res) => {
             ? "password"
             : "email"
         } in the request.`,
+        error: true,
+      });
+    }
+
+    const { accessToken: accessTokenFromCookie } = getTokensFromCookies(req);
+
+    if (accessTokenFromCookie) {
+      return res.status(406).json({
+        message: "You are already logged in.",
         error: true,
       });
     }

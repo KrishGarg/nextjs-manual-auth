@@ -14,7 +14,7 @@ interface Data {
 
 const handler: NextApiHandler<Data> = async (req, res) => {
   if (req.method !== "GET") {
-    return res.status(404).json({
+    return res.status(405).json({
       message: `${req.method} not allowed.`,
       error: true,
     });
