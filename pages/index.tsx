@@ -1,32 +1,32 @@
 import type { NextPage } from "next";
 import { MouseEventHandler } from "react";
 
-const Home: NextPage = () => {
-  const handleClick = (
-    endpoint: string,
-    method: "POST" | "GET"
-  ): MouseEventHandler => {
-    const handler: MouseEventHandler = async () => {
-      const res = await fetch(endpoint, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body:
-          method !== "GET"
-            ? JSON.stringify({
-                email: "test@mail.com",
-                password: "testpass",
-              })
-            : undefined,
-      });
-      const data = await res.json();
+const handleClick = (
+  endpoint: string,
+  method: "POST" | "GET"
+): MouseEventHandler => {
+  const handler: MouseEventHandler = async () => {
+    const res = await fetch(endpoint, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:
+        method !== "GET"
+          ? JSON.stringify({
+              email: "test@mail.com",
+              password: "testpass",
+            })
+          : undefined,
+    });
+    const data = await res.json();
 
-      console.log(data);
-    };
-    return handler;
+    console.log(data);
   };
+  return handler;
+};
 
+const Home: NextPage = () => {
   return (
     <>
       Tests

@@ -2,9 +2,13 @@ import { genSalt, hash, compare } from "bcrypt";
 import { createTokens, Tokens } from "@/lib/tokens";
 import { createUser, findUserByEmail } from "@/lib/db";
 
-type LoginType = (email: string, password: string) => Promise<Tokens>;
+type LoginType = (
+  email: string,
+  password: string,
+  userAgent: string | undefined
+) => Promise<Tokens>;
 
-const login: LoginType = async (email, password) => {
+const login: LoginType = async (email, password, userAgent) => {
   const user = await findUserByEmail(email);
 
   if (!user) {
@@ -18,6 +22,8 @@ const login: LoginType = async (email, password) => {
   const tokens = createTokens({
     id: user.id,
   });
+
+  if (!userAgent) userAgent = "Unknown";
 
   return tokens;
 };

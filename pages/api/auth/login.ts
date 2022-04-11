@@ -5,31 +5,35 @@ import {
   getTokensFromCookies,
   setAccessAndRefreshTokenCookies,
 } from "@/lib/easyCookie";
+import { ApiData } from "@/lib/constants";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { getClientIp } from "request-ip";
 
-interface Data {
-  message: string;
-  error: boolean;
-}
-
-const handler: NextApiHandler<Data> = async (req, res) => {
+const handler: NextApiHandler<ApiData> = async (req, res) => {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({
-        message: `${req.method} not allowed.`,
+      return res.status(StatusCodes.METHOD_NOT_ALLOWED).json({
+        message: ReasonPhrases.METHOD_NOT_ALLOWED,
         error: true,
       });
     }
 
+    // testing
+    return res.status(200).json({
+      message: `${req.headers["user-agent"]}, ${getClientIp(req)}`,
+      error: false,
+    });
+
     const { email, password }: { email: string; password: string } = req.body;
 
     if (!email || !password) {
-      return res.status(403).json({
-        message: `There was no ${
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: `There was ${
           !email && !password
-            ? "email and password"
+            ? "neither email nor password"
             : email && !password
-            ? "password"
-            : "email"
+            ? "no password"
+            : "no email"
         } in the request.`,
         error: true,
       });
@@ -38,7 +42,7 @@ const handler: NextApiHandler<Data> = async (req, res) => {
     const { accessToken: accessTokenFromCookie } = getTokensFromCookies(req);
 
     if (accessTokenFromCookie) {
-      return res.status(406).json({
+      return res.status(StatusCodes.NOT_ACCEPTABLE).json({
         message: "You are already logged in.",
         error: true,
       });
@@ -46,14 +50,14 @@ const handler: NextApiHandler<Data> = async (req, res) => {
 
     let tokens: Tokens;
     try {
-      tokens = await login(email, password);
+      tokens = await login(email, password, req.headers["user-agent"]);
     } catch (e) {
       let message = "Incorrect Credentials";
       if (e instanceof Error) {
-        message = e.message;
+        //message = e.message;
       }
 
-      return res.status(403).json({
+      return res.status(StatusCodes.FORBIDDEN).json({
         message,
         error: true,
       });
@@ -62,7 +66,7 @@ const handler: NextApiHandler<Data> = async (req, res) => {
     const { accessToken, refreshToken } = tokens;
     setAccessAndRefreshTokenCookies(res, accessToken, refreshToken);
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       message: "Login Successful",
       error: false,
     });
@@ -77,7 +81,7 @@ const handler: NextApiHandler<Data> = async (req, res) => {
       message = "Unknown Error";
     }
 
-    return res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message,
       error: true,
     });
