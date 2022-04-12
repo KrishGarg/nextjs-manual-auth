@@ -47,7 +47,7 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
     }
 
     deleteAccessAndRefreshTokenCookies(res);
-    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Cache-Control", "public; max-age=0");
     return res.status(StatusCodes.OK).json({
       message: "Successfully logged out",
       error: false,
