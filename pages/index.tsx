@@ -35,8 +35,10 @@ const Home: NextPage = () => {
           Signup
         </button>
         <button onClick={handleClick("/api/auth/login", "POST")}>Login</button>
-        <button onClick={handleClick("/api/auth/me", "GET")}>Me</button>
-        <button onClick={handleClick("/api/auth/logout", "GET")}>Logout</button>
+        <button onClick={handleClick("/api/me", "GET")}>Me</button>
+        <button onClick={handleClick("/api/auth/logout", "POST")}>
+          Logout
+        </button>
         <button onClick={handleClick("/api/auth/refresh", "POST")}>
           Refresh Tokens
         </button>

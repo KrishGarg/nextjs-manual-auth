@@ -10,7 +10,7 @@ import { findUserById, overrideTokens } from "@/lib/db";
 
 const handler: NextApiHandler<ApiData> = async (req, res) => {
   try {
-    if (req.method !== "GET") {
+    if (req.method !== "POST") {
       return res.status(StatusCodes.METHOD_NOT_ALLOWED).json({
         message: ReasonPhrases.METHOD_NOT_ALLOWED,
         error: true,
@@ -47,7 +47,6 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
     }
 
     deleteAccessAndRefreshTokenCookies(res);
-    res.setHeader("Cache-Control", "public; max-age=0");
     return res.status(StatusCodes.OK).json({
       message: "Successfully logged out",
       error: false,

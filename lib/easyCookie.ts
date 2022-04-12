@@ -5,6 +5,8 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
+  COOKIE_PATH,
+  DEFAULT_COOKIE_SERIALIZE_OPTIONS,
 } from "@/lib/constants";
 
 interface SetCookiesParams {
@@ -25,7 +27,7 @@ export const setCookies: SetCookiesType = ({ res, cookies }) => {
       ({
         name,
         value,
-        cookieSerializeOptions = { httpOnly: true, secure: true },
+        cookieSerializeOptions = DEFAULT_COOKIE_SERIALIZE_OPTIONS,
       }) => serialize(name, value, cookieSerializeOptions)
     )
   );
@@ -47,9 +49,8 @@ export const setAccessTokenCookie: SetAccessTokenCookiesType = (
         name: ACCESS_TOKEN_COOKIE_NAME,
         value: accessToken,
         cookieSerializeOptions: {
+          ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
           maxAge: ACCESS_TOKEN_MAX_AGE,
-          httpOnly: true,
-          secure: true,
         },
       },
     ],
@@ -71,18 +72,16 @@ export const setAccessAndRefreshTokenCookies: SetAccessAndRefreshTokenCookiesTyp
           name: ACCESS_TOKEN_COOKIE_NAME,
           value: accessToken,
           cookieSerializeOptions: {
+            ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
             maxAge: ACCESS_TOKEN_MAX_AGE,
-            httpOnly: true,
-            secure: true,
           },
         },
         {
           name: REFRESH_TOKEN_COOKIE_NAME,
           value: refreshToken,
           cookieSerializeOptions: {
+            ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
             maxAge: REFRESH_TOKEN_MAX_AGE,
-            httpOnly: true,
-            secure: true,
           },
         },
       ],
@@ -100,18 +99,16 @@ export const deleteAccessAndRefreshTokenCookies: DeleteAccessAndRefreshTokenCook
           name: ACCESS_TOKEN_COOKIE_NAME,
           value: "",
           cookieSerializeOptions: {
+            ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
             expires: new Date(1),
-            httpOnly: true,
-            secure: true,
           },
         },
         {
           name: REFRESH_TOKEN_COOKIE_NAME,
           value: "",
           cookieSerializeOptions: {
+            ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
             expires: new Date(1),
-            httpOnly: true,
-            secure: true,
           },
         },
       ],
