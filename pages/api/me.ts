@@ -4,12 +4,10 @@ import { findUserById } from "@/lib/db";
 import { getTokensFromCookies } from "@/lib/easyCookie";
 import { ApiData } from "@/lib/constants";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { User } from "@prisma/client";
 
 interface Data extends ApiData {
-  user?: {
-    id: string;
-    email: string; // Can attach more user details like avatar and username too.
-  };
+  user?: Omit<User, "password">;
 }
 
 const handler: NextApiHandler<Data> = async (req, res) => {
@@ -48,11 +46,10 @@ const handler: NextApiHandler<Data> = async (req, res) => {
       });
     }
 
+    const userToSend = (({ password, ...o }: User) => o)(user); // remove password
+
     return res.status(StatusCodes.OK).json({
-      user: {
-        id: user.id,
-        email: user.email,
-      },
+      user: userToSend,
       message: "User successfully found",
       error: false,
     });
