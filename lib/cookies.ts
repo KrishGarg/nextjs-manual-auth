@@ -5,7 +5,6 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
-  COOKIE_PATH,
   DEFAULT_COOKIE_SERIALIZE_OPTIONS,
 } from "@/lib/constants";
 
@@ -20,7 +19,7 @@ interface SetCookiesParams {
 
 type SetCookiesType = (options: SetCookiesParams) => void;
 
-export const setCookies: SetCookiesType = ({ res, cookies }) => {
+const setCookies: SetCookiesType = ({ res, cookies }) => {
   res.setHeader(
     "Set-Cookie",
     cookies.map(
@@ -33,14 +32,16 @@ export const setCookies: SetCookiesType = ({ res, cookies }) => {
   );
 };
 
-type SetAccessTokenCookiesType = (
+type SetAccessAndRefreshTokenCookiesType = (
   res: NextApiResponse,
-  accessToken: string
+  accessToken: string,
+  refreshToken: string
 ) => void;
 
-export const setAccessTokenCookie: SetAccessTokenCookiesType = (
+const setAccessAndRefreshTokenCookies: SetAccessAndRefreshTokenCookiesType = (
   res,
-  accessToken
+  accessToken,
+  refreshToken
 ) => {
   setCookies({
     res,
@@ -53,44 +54,21 @@ export const setAccessTokenCookie: SetAccessTokenCookiesType = (
           maxAge: ACCESS_TOKEN_MAX_AGE,
         },
       },
+      {
+        name: REFRESH_TOKEN_COOKIE_NAME,
+        value: refreshToken,
+        cookieSerializeOptions: {
+          ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
+          maxAge: REFRESH_TOKEN_MAX_AGE,
+        },
+      },
     ],
   });
 };
 
-type SetAccessAndRefreshTokenCookiesType = (
-  res: NextApiResponse,
-  accessToken: string,
-  refreshToken: string
-) => void;
-
-export const setAccessAndRefreshTokenCookies: SetAccessAndRefreshTokenCookiesType =
-  (res, accessToken, refreshToken) => {
-    setCookies({
-      res,
-      cookies: [
-        {
-          name: ACCESS_TOKEN_COOKIE_NAME,
-          value: accessToken,
-          cookieSerializeOptions: {
-            ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
-            maxAge: ACCESS_TOKEN_MAX_AGE,
-          },
-        },
-        {
-          name: REFRESH_TOKEN_COOKIE_NAME,
-          value: refreshToken,
-          cookieSerializeOptions: {
-            ...DEFAULT_COOKIE_SERIALIZE_OPTIONS,
-            maxAge: REFRESH_TOKEN_MAX_AGE,
-          },
-        },
-      ],
-    });
-  };
-
 type DeleteAccessAndRefreshTokenCookiesType = (res: NextApiResponse) => void;
 
-export const deleteAccessAndRefreshTokenCookies: DeleteAccessAndRefreshTokenCookiesType =
+const deleteAccessAndRefreshTokenCookies: DeleteAccessAndRefreshTokenCookiesType =
   (res) => {
     setCookies({
       res,
@@ -122,9 +100,16 @@ interface NullibleTokens {
 
 type GetTokensFromCookiesType = (req: NextApiRequest) => NullibleTokens;
 
-export const getTokensFromCookies: GetTokensFromCookiesType = (req) => {
+const getTokensFromCookies: GetTokensFromCookiesType = (req) => {
   return {
     accessToken: req.cookies[ACCESS_TOKEN_COOKIE_NAME] ?? undefined,
     refreshToken: req.cookies[REFRESH_TOKEN_COOKIE_NAME] ?? undefined,
   };
+};
+
+export {
+  setAccessAndRefreshTokenCookies,
+  deleteAccessAndRefreshTokenCookies,
+  getTokensFromCookies,
+  setCookies,
 };

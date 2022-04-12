@@ -1,51 +1,53 @@
 import type { NextApiHandler } from "next";
 import { ApiData } from "@/lib/constants";
-import { StatusCodes, ReasonPhrases } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import { refreshTokens } from "@/lib/auth";
 import {
   getTokensFromCookies,
   setAccessAndRefreshTokenCookies,
-} from "@/lib/easyCookie";
+} from "@/lib/cookies";
 import { getClientIp } from "request-ip";
+import { handleErr, handleServerErr, methodNotAllowed } from "@/lib/helpers";
 
 const handler: NextApiHandler<ApiData> = async (req, res) => {
   if (req.method !== "POST") {
-    return res.status(StatusCodes.METHOD_NOT_ALLOWED).json({
-      message: ReasonPhrases.METHOD_NOT_ALLOWED,
-      error: true,
-    });
-  }
-
-  const { refreshToken } = getTokensFromCookies(req);
-  if (!refreshToken) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message: "The refresh token is missing.",
-      error: true,
-    });
+    return methodNotAllowed(res);
   }
 
   try {
-    const { accessToken, refreshToken: newRefreshToken } = await refreshTokens(
-      refreshToken,
-      getClientIp(req),
-      req.headers["user-agent"]
-    );
-    setAccessAndRefreshTokenCookies(res, accessToken, newRefreshToken);
-  } catch (e) {
-    let message = "Invalid Token";
-    if (e instanceof Error) {
-      message = e.message;
+    const { refreshToken } = getTokensFromCookies(req);
+    if (!refreshToken) {
+      return handleErr({
+        res,
+        statusCode: StatusCodes.BAD_REQUEST,
+        message: "The refresh token is missing.",
+      });
     }
-    return res.status(StatusCodes.FORBIDDEN).json({
-      message,
-      error: true,
-    });
-  }
 
-  return res.status(StatusCodes.OK).json({
-    error: false,
-    message: "Tokens successfully refreshed",
-  });
+    try {
+      const { accessToken, refreshToken: newRefreshToken } =
+        await refreshTokens(
+          refreshToken,
+          getClientIp(req),
+          req.headers["user-agent"]
+        );
+      setAccessAndRefreshTokenCookies(res, accessToken, newRefreshToken);
+    } catch (e) {
+      return handleErr({
+        res,
+        e,
+        statusCode: StatusCodes.FORBIDDEN,
+        message: "Invalid Token",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      error: false,
+      message: "Tokens successfully refreshed",
+    });
+  } catch (e) {
+    return handleServerErr(res, e);
+  }
 };
 
 export default handler;

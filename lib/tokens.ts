@@ -1,5 +1,10 @@
 import { JwtPayload, sign, verify } from "jsonwebtoken";
-import { ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from "@/lib/constants";
+import {
+  ACCESS_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_MAX_AGE,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+} from "@/lib/constants";
 import { nanoid } from "nanoid";
 
 interface Payload extends JwtPayload {
@@ -10,11 +15,11 @@ interface Payload extends JwtPayload {
 type CreateAccessTokenType = (data: Payload) => string;
 
 const createAccessToken: CreateAccessTokenType = (data) => {
-  if (!process.env.ACCESS_TOKEN_SECRET) {
+  if (!ACCESS_TOKEN_SECRET) {
     throw new Error("No access token secret found.");
   }
 
-  return sign(data, process.env.ACCESS_TOKEN_SECRET, {
+  return sign(data, ACCESS_TOKEN_SECRET, {
     expiresIn: ACCESS_TOKEN_MAX_AGE,
   });
 };
@@ -25,19 +30,15 @@ type CreateRefreshTokenType = (data: Payload) => {
 };
 
 const createRefreshToken: CreateRefreshTokenType = (data) => {
-  if (!process.env.REFRESH_TOKEN_SECRET) {
+  if (!REFRESH_TOKEN_SECRET) {
     throw new Error("No refresh token secret found.");
   }
 
   const id = nanoid();
 
-  const refreshToken = sign(
-    { ...data, tokenId: id },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: REFRESH_TOKEN_MAX_AGE,
-    }
-  );
+  const refreshToken = sign({ ...data, tokenId: id }, REFRESH_TOKEN_SECRET, {
+    expiresIn: REFRESH_TOKEN_MAX_AGE,
+  });
 
   return {
     refreshToken,
@@ -68,31 +69,14 @@ const createTokens: CreateTokensType = (data) => {
 type DecodeTokenType = (token: string, type: "access" | "refresh") => Payload;
 
 const decodeToken: DecodeTokenType = (token, type) => {
-  if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
-    throw new Error("No access or refresh token.");
+  if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
+    throw new Error("No access or refresh token secret.");
   }
 
-  const secret =
-    type === "access"
-      ? process.env.ACCESS_TOKEN_SECRET
-      : process.env.REFRESH_TOKEN_SECRET;
+  const secret = type === "access" ? ACCESS_TOKEN_SECRET : REFRESH_TOKEN_SECRET;
 
   return verify(token, secret) as Payload;
 };
 
-const decodeAccessTokenOrUndef = (accessToken: string) => {
-  try {
-    return decodeToken(accessToken, "access");
-  } catch (e) {
-    return undefined;
-  }
-};
-
-export {
-  createAccessToken,
-  createRefreshToken,
-  createTokens,
-  decodeToken,
-  decodeAccessTokenOrUndef,
-};
+export { createAccessToken, createRefreshToken, createTokens, decodeToken };
 export type { Tokens, Payload };

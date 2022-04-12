@@ -1,10 +1,14 @@
 import type { NextApiHandler } from "next";
-import { decodeAccessTokenOrUndef } from "@/lib/tokens";
 import { findUserById } from "@/lib/db";
-import { getTokensFromCookies } from "@/lib/easyCookie";
 import { ApiData } from "@/lib/constants";
-import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import { User } from "@prisma/client";
+import {
+  getUserIDFromReq,
+  handleErr,
+  handleServerErr,
+  methodNotAllowed,
+} from "@/lib/helpers";
 
 interface Data extends ApiData {
   user?: Omit<User, "password">;
@@ -12,37 +16,26 @@ interface Data extends ApiData {
 
 const handler: NextApiHandler<Data> = async (req, res) => {
   if (req.method !== "GET") {
-    return res.status(StatusCodes.METHOD_NOT_ALLOWED).json({
-      message: ReasonPhrases.METHOD_NOT_ALLOWED,
-      error: true,
-    });
+    return methodNotAllowed(res);
   }
 
   try {
-    const { accessToken } = getTokensFromCookies(req);
+    const id = getUserIDFromReq(req);
 
-    if (!accessToken) {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        message: "The access token is missing.",
-        error: true,
+    if (!id) {
+      return handleErr({
+        res,
+        statusCode: StatusCodes.UNAUTHORIZED,
       });
     }
 
-    const payload = decodeAccessTokenOrUndef(accessToken);
-
-    if (!payload) {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        message: "Invalid Token",
-        error: true,
-      });
-    }
-
-    const user = await findUserById(payload.userId);
+    const user = await findUserById(id);
 
     if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({
-        message: "No user with the ID given exists.",
-        error: true,
+      return handleErr({
+        res,
+        statusCode: StatusCodes.NOT_FOUND,
+        message: "User not found",
       });
     }
 
@@ -54,20 +47,7 @@ const handler: NextApiHandler<Data> = async (req, res) => {
       error: false,
     });
   } catch (e) {
-    let message: string;
-
-    if (typeof e === "string") {
-      message = e;
-    } else if (e instanceof Error) {
-      message = e.message;
-    } else {
-      message = "Unknown Error";
-    }
-
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message,
-      error: true,
-    });
+    return handleServerErr(res, e);
   }
 };
 

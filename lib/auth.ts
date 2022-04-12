@@ -113,4 +113,17 @@ const refreshTokens: RefreshTokensType = async (
   return { accessToken, refreshToken };
 };
 
-export { login, signup, refreshTokens };
+type LogoutType = (refreshToken: string) => Promise<void>;
+
+const logout: LogoutType = async (refreshToken) => {
+  const { userId, tokenId } = decodeToken(refreshToken, "refresh");
+  if (userId && tokenId) {
+    const user = await findUserById(userId);
+    if (user) {
+      const otherTokens = user.tokens.filter((t) => t.tokenId !== tokenId);
+      await overrideTokens(userId, otherTokens);
+    }
+  }
+};
+
+export { login, signup, refreshTokens, logout };

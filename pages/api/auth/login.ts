@@ -1,27 +1,34 @@
 import { login } from "@/lib/auth";
 import { Tokens } from "@/lib/tokens";
-import type { NextApiHandler } from "next";
+import type { NextApiHandler, NextApiRequest } from "next";
 import {
   getTokensFromCookies,
   setAccessAndRefreshTokenCookies,
-} from "@/lib/easyCookie";
+} from "@/lib/cookies";
 import { ApiData } from "@/lib/constants";
-import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import { getClientIp } from "request-ip";
+import { handleErr, handleServerErr, methodNotAllowed } from "@/lib/helpers";
 
-const handler: NextApiHandler<ApiData> = async (req, res) => {
+interface WithBodyReq extends NextApiRequest {
+  body: {
+    email?: string;
+    password?: string;
+  };
+}
+
+const handler: NextApiHandler<ApiData> = async (req: WithBodyReq, res) => {
+  if (req.method !== "POST") {
+    return methodNotAllowed(res);
+  }
+
   try {
-    if (req.method !== "POST") {
-      return res.status(StatusCodes.METHOD_NOT_ALLOWED).json({
-        message: ReasonPhrases.METHOD_NOT_ALLOWED,
-        error: true,
-      });
-    }
-
-    const { email, password }: { email: string; password: string } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
+      return handleErr({
+        res,
+        statusCode: StatusCodes.BAD_REQUEST,
         message: `There was ${
           !email && !password
             ? "neither email nor password"
@@ -29,16 +36,16 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
             ? "no password"
             : "no email"
         } in the request.`,
-        error: true,
       });
     }
 
     const { accessToken: accessTokenFromCookie } = getTokensFromCookies(req);
 
     if (accessTokenFromCookie) {
-      return res.status(StatusCodes.NOT_ACCEPTABLE).json({
+      return handleErr({
+        res,
+        statusCode: StatusCodes.NOT_ACCEPTABLE,
         message: "You are already logged in.",
-        error: true,
       });
     }
 
@@ -51,14 +58,11 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
         getClientIp(req)
       );
     } catch (e) {
-      let message = "Incorrect Credentials";
-      if (e instanceof Error) {
-        message = e.message;
-      }
-
-      return res.status(StatusCodes.FORBIDDEN).json({
-        message,
-        error: true,
+      return handleErr({
+        res,
+        e,
+        statusCode: StatusCodes.FORBIDDEN,
+        message: "Incorrect Credentials",
       });
     }
 
@@ -70,20 +74,7 @@ const handler: NextApiHandler<ApiData> = async (req, res) => {
       error: false,
     });
   } catch (e) {
-    let message: string;
-
-    if (typeof e === "string") {
-      message = e;
-    } else if (e instanceof Error) {
-      message = e.message;
-    } else {
-      message = "Unknown Error";
-    }
-
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      message,
-      error: true,
-    });
+    return handleServerErr(res, e);
   }
 };
 
