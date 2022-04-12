@@ -33,7 +33,7 @@ const login: LoginType = async (email, password, userAgent, ip) => {
 
   if (!userAgent) userAgent = "Unknown";
   if (!ip) ip = "Unknown";
-  addClientDataToUser(user.id, ip, userAgent, tokenId);
+  await addClientDataToUser(user.id, ip, userAgent, tokenId);
 
   return { accessToken, refreshToken };
 };
@@ -62,7 +62,7 @@ const signup: SignupType = async (email, password, userAgent, ip) => {
 
   if (!userAgent) userAgent = "Unknown";
   if (!ip) ip = "Unknown";
-  addClientDataToUser(newUser.id, ip, userAgent, tokenId);
+  await addClientDataToUser(newUser.id, ip, userAgent, tokenId);
 
   return { accessToken, refreshToken };
 };
