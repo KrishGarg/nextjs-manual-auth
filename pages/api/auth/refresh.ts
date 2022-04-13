@@ -1,8 +1,7 @@
-import type { NextApiHandler } from "next";
 import { StatusCodes } from "http-status-codes";
 import { getClientIp } from "request-ip";
 
-import { ApiData } from "@/lib/constants";
+import { ApiHandler } from "@/lib/constants";
 import { refreshTokens } from "@/lib/auth";
 import {
   getTokensFromCookies,
@@ -10,7 +9,7 @@ import {
 } from "@/lib/cookies";
 import { handleErr, handleServerErr, methodNotAllowed } from "@/lib/helpers";
 
-const handler: NextApiHandler<ApiData> = async (req, res) => {
+const handler: ApiHandler = async (req, res) => {
   if (req.method !== "POST") {
     return methodNotAllowed(res);
   }

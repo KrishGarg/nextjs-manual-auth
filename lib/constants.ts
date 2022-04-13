@@ -1,4 +1,5 @@
 import { CookieSerializeOptions } from "cookie";
+import { NextApiHandler } from "next";
 
 export const ACCESS_TOKEN_COOKIE_NAME = "access-token";
 export const REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
@@ -19,6 +20,8 @@ export const DEFAULT_COOKIE_SERIALIZE_OPTIONS: CookieSerializeOptions = {
   secure: true,
   path: COOKIE_PATH,
 };
+
+export type ApiHandler<Res = {}> = NextApiHandler<ApiData & Res>;
 
 // env vars
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;

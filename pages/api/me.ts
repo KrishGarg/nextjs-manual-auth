@@ -1,9 +1,8 @@
-import type { NextApiHandler } from "next";
 import { StatusCodes } from "http-status-codes";
 import { User } from "@prisma/client";
 
 import { findUserById } from "@/lib/db";
-import { ApiData } from "@/lib/constants";
+import { ApiHandler } from "@/lib/constants";
 import {
   getUserIDFromReq,
   handleErr,
@@ -11,11 +10,11 @@ import {
   methodNotAllowed,
 } from "@/lib/helpers";
 
-interface Data extends ApiData {
+interface Res {
   user?: Omit<User, "password">;
 }
 
-const handler: NextApiHandler<Data> = async (req, res) => {
+const handler: ApiHandler<Res> = async (req, res) => {
   if (req.method !== "GET") {
     return methodNotAllowed(res);
   }
