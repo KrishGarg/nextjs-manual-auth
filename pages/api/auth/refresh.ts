@@ -1,12 +1,13 @@
 import type { NextApiHandler } from "next";
-import { ApiData } from "@/lib/constants";
 import { StatusCodes } from "http-status-codes";
+import { getClientIp } from "request-ip";
+
+import { ApiData } from "@/lib/constants";
 import { refreshTokens } from "@/lib/auth";
 import {
   getTokensFromCookies,
   setAccessAndRefreshTokenCookies,
 } from "@/lib/cookies";
-import { getClientIp } from "request-ip";
 import { handleErr, handleServerErr, methodNotAllowed } from "@/lib/helpers";
 
 const handler: NextApiHandler<ApiData> = async (req, res) => {

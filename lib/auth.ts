@@ -1,5 +1,6 @@
 import { genSalt, hash, compare } from "bcrypt";
-import { createTokens, decodeToken, Tokens } from "@/lib/tokens";
+import { LoggedInClient } from "@prisma/client";
+
 import {
   addClientDataToUser,
   createUser,
@@ -7,7 +8,7 @@ import {
   findUserById,
   overrideTokens,
 } from "@/lib/db";
-import { LoggedInClient } from "@prisma/client";
+import { createTokens, decodeToken, Tokens } from "@/lib/tokens";
 
 type LoginType = (
   email: string,

@@ -1,13 +1,14 @@
+import type { NextApiHandler, NextApiRequest } from "next";
+import { StatusCodes } from "http-status-codes";
+import { getClientIp } from "request-ip";
+
 import { login } from "@/lib/auth";
 import { Tokens } from "@/lib/tokens";
-import type { NextApiHandler, NextApiRequest } from "next";
 import {
   getTokensFromCookies,
   setAccessAndRefreshTokenCookies,
 } from "@/lib/cookies";
 import { ApiData } from "@/lib/constants";
-import { StatusCodes } from "http-status-codes";
-import { getClientIp } from "request-ip";
 import { handleErr, handleServerErr, methodNotAllowed } from "@/lib/helpers";
 
 interface WithBodyReq extends NextApiRequest {

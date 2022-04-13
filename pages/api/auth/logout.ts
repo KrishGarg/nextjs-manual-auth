@@ -1,10 +1,11 @@
+import type { NextApiHandler } from "next";
+import { StatusCodes } from "http-status-codes";
+
 import { ApiData } from "@/lib/constants";
 import {
   deleteAccessAndRefreshTokenCookies,
   getTokensFromCookies,
 } from "@/lib/cookies";
-import type { NextApiHandler } from "next";
-import { StatusCodes } from "http-status-codes";
 import { handleErr, handleServerErr, methodNotAllowed } from "@/lib/helpers";
 import { logout } from "@/lib/auth";
 

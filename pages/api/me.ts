@@ -1,8 +1,9 @@
 import type { NextApiHandler } from "next";
-import { findUserById } from "@/lib/db";
-import { ApiData } from "@/lib/constants";
 import { StatusCodes } from "http-status-codes";
 import { User } from "@prisma/client";
+
+import { findUserById } from "@/lib/db";
+import { ApiData } from "@/lib/constants";
 import {
   getUserIDFromReq,
   handleErr,

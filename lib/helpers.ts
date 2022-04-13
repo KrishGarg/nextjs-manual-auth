@@ -1,8 +1,9 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ApiData } from "./constants";
-import { getTokensFromCookies } from "./cookies";
-import { decodeToken, Payload } from "./tokens";
+
+import { ApiData } from "@/lib/constants";
+import { getTokensFromCookies } from "@/lib/cookies";
+import { decodeToken, Payload } from "@/lib/tokens";
 
 const getUserIDFromReq = (req: NextApiRequest): string | null => {
   const { accessToken } = getTokensFromCookies(req);

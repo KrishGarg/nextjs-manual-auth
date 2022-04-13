@@ -1,11 +1,12 @@
 import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { nanoid } from "nanoid";
+
 import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
 } from "@/lib/constants";
-import { nanoid } from "nanoid";
 
 interface Payload extends JwtPayload {
   userId: string;
