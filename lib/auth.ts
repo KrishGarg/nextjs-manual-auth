@@ -1,4 +1,4 @@
-import { genSalt, hash, compare } from "bcrypt";
+import { hash, verify } from "argon2";
 
 import {
   createUser,
@@ -23,7 +23,7 @@ const login: LoginType = async (email, password, userAgent, ip) => {
     throw new Error("No user with the given email exists.");
   }
 
-  if (!(await compare(password, user.password))) {
+  if (!(await verify(user.password, password))) {
     throw new Error("Incorrect password.");
   }
 
@@ -55,7 +55,7 @@ const signup: SignupType = async (email, password, userAgent, ip) => {
     throw new Error("User with the given email already exists.");
   }
 
-  const passwordHash = await hash(password, await genSalt());
+  const passwordHash = await hash(password);
 
   const newUser = await createUser(email, passwordHash);
 

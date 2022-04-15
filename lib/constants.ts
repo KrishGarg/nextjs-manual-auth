@@ -23,6 +23,8 @@ export const DEFAULT_COOKIE_SERIALIZE_OPTIONS: CookieSerializeOptions = {
 
 export type ApiHandler<Res = {}> = NextApiHandler<ApiData & Res>;
 
+export const TOKEN_CREATED_AT_INDEX_NAME = "Token_createdAt_ttl_index";
+
 // env vars
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;

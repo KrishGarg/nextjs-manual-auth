@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { REFRESH_TOKEN_MAX_AGE } from "./constants";
+import {
+  REFRESH_TOKEN_MAX_AGE,
+  TOKEN_CREATED_AT_INDEX_NAME,
+} from "@/lib/constants";
 
 const prisma = new PrismaClient();
 
@@ -51,19 +54,21 @@ const deleteTokenByID = async (id: string) =>
     },
   });
 
-// mongodb should ignore the trial of recreation of index with same name
-prisma.$runCommandRaw({
-  createIndexes: "Token",
-  indexes: [
-    {
-      key: {
-        createdAt: 1,
+const createIndexes = async () => {
+  // mongodb should ignore the trial of recreation of index with same name
+  await prisma.$runCommandRaw({
+    createIndexes: "Token",
+    indexes: [
+      {
+        key: {
+          createdAt: 1,
+        },
+        name: TOKEN_CREATED_AT_INDEX_NAME,
+        expireAfterSeconds: REFRESH_TOKEN_MAX_AGE,
       },
-      name: "Token_createdAt_ttl_index",
-      expireAfterSeconds: REFRESH_TOKEN_MAX_AGE,
-    },
-  ],
-});
+    ],
+  });
+};
 
 export {
   findUserByEmail,
@@ -72,4 +77,5 @@ export {
   addTokenSession,
   findTokenByID,
   deleteTokenByID,
+  createIndexes,
 };

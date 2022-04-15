@@ -1,7 +1,7 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { ApiData } from "@/lib/constants";
+import { ApiData, ApiHandler } from "@/lib/constants";
 import { getTokensFromCookies } from "@/lib/cookies";
 import { decodeToken, Payload } from "@/lib/tokens";
 
