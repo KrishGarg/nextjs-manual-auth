@@ -24,6 +24,9 @@ const handler: ApiHandler = async (req, res) => {
       });
     }
 
+    // Setting the cookies anyways to prevent any issues.
+    deleteAccessAndRefreshTokenCookies(res);
+
     try {
       await logout(refreshToken);
     } catch (e) {
@@ -35,7 +38,6 @@ const handler: ApiHandler = async (req, res) => {
       });
     }
 
-    deleteAccessAndRefreshTokenCookies(res);
     return res.status(StatusCodes.OK).json({
       message: "Successfully logged out",
       error: false,

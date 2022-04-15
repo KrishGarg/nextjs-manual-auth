@@ -29,7 +29,7 @@ const handler: ApiHandler<Res> = async (req, res) => {
       });
     }
 
-    const user = await findUserById(id);
+    const user = await findUserById(id, true);
 
     if (!user) {
       return handleErr({

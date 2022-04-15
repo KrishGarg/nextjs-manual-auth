@@ -1,12 +1,11 @@
 import { genSalt, hash, compare } from "bcrypt";
-import { LoggedInClient } from "@prisma/client";
 
 import {
-  addClientDataToUser,
   createUser,
   findUserByEmail,
-  findUserById,
-  overrideTokens,
+  addTokenSession,
+  findTokenByID,
+  deleteTokenByID,
 } from "@/lib/db";
 import { createTokens, decodeToken, Tokens } from "@/lib/tokens";
 
@@ -28,13 +27,16 @@ const login: LoginType = async (email, password, userAgent, ip) => {
     throw new Error("Incorrect password.");
   }
 
-  const { accessToken, refreshToken, tokenId } = createTokens({
-    userId: user.id,
-  });
-
   if (!userAgent) userAgent = "Unknown";
   if (!ip) ip = "Unknown";
-  await addClientDataToUser(user.id, ip, userAgent, tokenId);
+  const tokenInfo = await addTokenSession(user.id, ip, userAgent);
+
+  const { accessToken, refreshToken } = createTokens(
+    {
+      userId: user.id,
+    },
+    tokenInfo.id
+  );
 
   return { accessToken, refreshToken };
 };
@@ -57,13 +59,16 @@ const signup: SignupType = async (email, password, userAgent, ip) => {
 
   const newUser = await createUser(email, passwordHash);
 
-  const { accessToken, refreshToken, tokenId } = createTokens({
-    userId: newUser.id,
-  });
-
   if (!userAgent) userAgent = "Unknown";
   if (!ip) ip = "Unknown";
-  await addClientDataToUser(newUser.id, ip, userAgent, tokenId);
+  const tokenInfo = await addTokenSession(newUser.id, ip, userAgent);
+
+  const { accessToken, refreshToken } = createTokens(
+    {
+      userId: newUser.id,
+    },
+    tokenInfo.id
+  );
 
   return { accessToken, refreshToken };
 };
@@ -81,35 +86,35 @@ const refreshTokens: RefreshTokensType = async (
 ) => {
   const { userId, tokenId } = decodeToken(oldRefreshToken, "refresh");
 
-  const user = await findUserById(userId);
-
-  if (!user) {
-    throw new Error("No user with the given ID exists.");
-  }
-
-  if (!user.tokens.some((t) => t.tokenId === tokenId)) {
+  if (!tokenId) {
     throw new Error("Invalid refresh token.");
   }
 
-  const {
-    accessToken,
-    refreshToken,
-    tokenId: newTokenID,
-  } = createTokens({
-    userId,
-    tokenId,
-  });
+  const token = await findTokenByID(tokenId);
+
+  if (!token) {
+    throw new Error("Invalid refresh token.");
+  }
+
+  if (token.userId !== userId) {
+    throw new Error("Invalid refresh token.");
+  }
 
   if (!userAgent) userAgent = "Unknown";
   if (!ip) ip = "Unknown";
 
-  const otherTokens = user.tokens.filter((t) => t.tokenId !== tokenId);
-  const newTokens = [
-    ...otherTokens,
-    { client: userAgent, tokenId: newTokenID, ip },
-  ] as LoggedInClient[];
+  // remove old token data
+  await deleteTokenByID(token.id);
 
-  await overrideTokens(userId, newTokens);
+  // add new token data
+  const newToken = await addTokenSession(userId, ip, userAgent);
+
+  const { accessToken, refreshToken } = createTokens(
+    {
+      userId,
+    },
+    newToken.id
+  );
 
   return { accessToken, refreshToken };
 };
@@ -119,10 +124,9 @@ type LogoutType = (refreshToken: string) => Promise<void>;
 const logout: LogoutType = async (refreshToken) => {
   const { userId, tokenId } = decodeToken(refreshToken, "refresh");
   if (userId && tokenId) {
-    const user = await findUserById(userId);
-    if (user) {
-      const otherTokens = user.tokens.filter((t) => t.tokenId !== tokenId);
-      await overrideTokens(userId, otherTokens);
+    const token = await findTokenByID(tokenId);
+    if (token) {
+      await deleteTokenByID(token.id);
     }
   }
 };
