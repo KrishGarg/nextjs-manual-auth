@@ -124,10 +124,9 @@ type LogoutType = (refreshToken: string) => Promise<void>;
 const logout: LogoutType = async (refreshToken) => {
   const { userId, tokenId } = decodeToken(refreshToken, "refresh");
   if (userId && tokenId) {
-    const token = await findTokenByID(tokenId);
-    if (token) {
-      await deleteTokenByID(token.id);
-    }
+    try {
+      await deleteTokenByID(tokenId);
+    } catch (e) {}
   }
 };
 

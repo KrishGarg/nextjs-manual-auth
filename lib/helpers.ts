@@ -1,7 +1,8 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { NextApiRequest, NextApiResponse } from "next";
+import nc from "next-connect";
 
-import { ApiData, ApiHandler } from "@/lib/constants";
+import { ApiData, MW, Req, Res } from "@/lib/constants";
 import { getTokensFromCookies } from "@/lib/cookies";
 import { decodeToken, Payload } from "@/lib/tokens";
 
@@ -33,7 +34,6 @@ const handleErr = ({ res, statusCode, message, e }: HandleErrOpt) => {
       error: true,
     });
   } else {
-    // try catch based non internal server error
     let messageToSend;
 
     if (typeof e === "string") {
@@ -65,7 +65,38 @@ const handleServerErr = (res: NextApiResponse<ApiData>, e?: unknown) =>
 const methodNotAllowed = (res: NextApiResponse<ApiData>) =>
   handleErr({
     res,
-    statusCode: StatusCodes.METHOD_NOT_ALLOWED,
+    statusCode: StatusCodes.NOT_FOUND,
   });
 
-export { getUserIDFromReq, handleServerErr, methodNotAllowed, handleErr };
+const createHandler = () => {
+  return nc<Req, Res>({
+    onError: (err, _, res, next) => {
+      handleServerErr(res as NextApiResponse, err);
+      next();
+    },
+    onNoMatch: (_, res) => {
+      methodNotAllowed(res as NextApiResponse);
+    },
+  });
+};
+
+const authNeeded: MW = (req, res, next) => {
+  const id = getUserIDFromReq(req);
+  if (!id) {
+    return handleErr({
+      res: res as NextApiResponse,
+      statusCode: StatusCodes.UNAUTHORIZED,
+    });
+  }
+  req.userId = id;
+  next();
+};
+
+export {
+  getUserIDFromReq,
+  handleServerErr,
+  methodNotAllowed,
+  handleErr,
+  createHandler,
+  authNeeded,
+};

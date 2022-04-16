@@ -1,8 +1,8 @@
-import { ApiHandler } from "@/lib/constants";
 import { createIndexes } from "@/lib/db";
-import { handleServerErr } from "@/lib/helpers";
+import { createHandler, handleServerErr } from "@/lib/helpers";
 
-const handler: ApiHandler = async (_, res) => {
+const handler = createHandler();
+handler.get(async (_, res) => {
   try {
     await createIndexes();
   } catch (e) {
@@ -12,6 +12,6 @@ const handler: ApiHandler = async (_, res) => {
     message: "API is up and running",
     error: false,
   });
-};
+});
 
 export default handler;
