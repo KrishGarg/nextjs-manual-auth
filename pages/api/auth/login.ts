@@ -7,7 +7,7 @@ import {
   createHandler,
   handleErr,
   getAccessTokenFromRequest,
-} from "@/lib/auth/backend/helpers";
+} from "@/authhelpers";
 import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,

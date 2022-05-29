@@ -6,7 +6,7 @@ import {
   createHandler,
   getRefreshTokenFromRequest,
   handleErr,
-} from "@/lib/auth/backend/helpers";
+} from "@/authhelpers";
 import { Tokens } from "@/lib/auth/backend/tokens";
 import {
   ACCESS_TOKEN_MAX_AGE,

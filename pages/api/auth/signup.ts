@@ -13,7 +13,7 @@ import {
   createHandler,
   getAccessTokenFromRequest,
   handleErr,
-} from "@/lib/auth/backend/helpers";
+} from "@/authhelpers";
 import { SignupRequestBody, SignupResponseBody } from "@/lib/auth/sharedTypes";
 
 const handler = createHandler();

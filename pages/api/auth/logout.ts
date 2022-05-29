@@ -4,7 +4,7 @@ import {
   createHandler,
   getRefreshTokenFromRequest,
   handleErr,
-} from "@/lib/auth/backend/helpers";
+} from "@/authhelpers";
 import { logout } from "@/lib/auth/backend/auth";
 import { Req, Res } from "@/lib/auth/backend/constants";
 import { LogoutRequestBody, LogoutResponseBody } from "@/lib/auth/sharedTypes";

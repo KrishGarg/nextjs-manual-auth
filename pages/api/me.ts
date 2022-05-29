@@ -2,11 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { User } from "@prisma/client";
 
 import { findUserById } from "@/lib/db";
-import {
-  authNeeded,
-  createHandler,
-  handleErr,
-} from "@/lib/auth/backend/helpers";
+import { authNeeded, createHandler, handleErr } from "@/authhelpers";
 import { Req, Res } from "@/lib/auth/backend/constants";
 import { MeRequestBody, MeResponseBody } from "@/lib/auth/sharedTypes";
 
