@@ -16,9 +16,12 @@ import {
 } from "@/lib/auth/sharedTypes";
 import { AxiosResponse } from "axios";
 import {
-  setAccessToken,
-  setAccessTokenExpiresAt,
-} from "@/lib/auth/frontend/accesstoken";
+  deleteAccessTokenInfo,
+  deleteRefreshTokenInfo,
+  getRefreshTokenInfo,
+  setAccessTokenInfo,
+  setRefreshTokenInfo,
+} from "@/lib/auth/frontend/tokens";
 // normally all of these would be in different pages
 
 // TODO: Clean up and organize code better
@@ -61,20 +64,15 @@ const Home: NextPage = () => {
               } = res.data;
 
               if (!error) {
-                if (accessToken) setAccessToken(accessToken);
-                if (accessTokenExpiresInSeconds)
-                  setAccessTokenExpiresAt(
-                    Date.now() + accessTokenExpiresInSeconds * 1000
+                if (accessToken && accessTokenExpiresInSeconds) {
+                  setAccessTokenInfo(accessToken, accessTokenExpiresInSeconds);
+                }
+                if (refreshToken && refreshTokenExpiresInSeconds) {
+                  setRefreshTokenInfo(
+                    refreshToken,
+                    refreshTokenExpiresInSeconds
                   );
-                if (refreshToken && refreshTokenExpiresInSeconds)
-                  localStorage.setItem(
-                    "refresh-token",
-                    JSON.stringify({
-                      token: refreshToken,
-                      expiresAt:
-                        Date.now() + refreshTokenExpiresInSeconds * 1000,
-                    })
-                  );
+                }
               }
               setResult(res.data);
             } catch (e) {
@@ -112,20 +110,15 @@ const Home: NextPage = () => {
               } = res.data;
 
               if (!error) {
-                if (accessToken) setAccessToken(accessToken);
-                if (accessTokenExpiresInSeconds)
-                  setAccessTokenExpiresAt(
-                    Date.now() + accessTokenExpiresInSeconds * 1000
+                if (accessToken && accessTokenExpiresInSeconds) {
+                  setAccessTokenInfo(accessToken, accessTokenExpiresInSeconds);
+                }
+                if (refreshToken && refreshTokenExpiresInSeconds) {
+                  setRefreshTokenInfo(
+                    refreshToken,
+                    refreshTokenExpiresInSeconds
                   );
-                if (refreshToken && refreshTokenExpiresInSeconds)
-                  localStorage.setItem(
-                    "refresh-token",
-                    JSON.stringify({
-                      token: refreshToken,
-                      expiresAt:
-                        Date.now() + refreshTokenExpiresInSeconds * 1000,
-                    })
-                  );
+                }
               }
               setResult(res.data);
             } catch (e) {
@@ -155,20 +148,21 @@ const Home: NextPage = () => {
         <button
           onClick={async () => {
             try {
+              const token = getRefreshTokenInfo();
+              if (!token) return;
               const res = await axios.post<
                 {},
                 AxiosResponse<LogoutResponseBody>,
                 LogoutRequestBody
               >("/auth/logout", {
-                refreshToken: JSON.parse(localStorage.getItem("refresh-token")!)
-                  ?.token,
+                refreshToken: token.token,
               });
 
               const { error } = res.data;
 
               if (!error) {
-                setAccessToken("");
-                localStorage.setItem("refresh-token", JSON.stringify({}));
+                deleteAccessTokenInfo();
+                deleteRefreshTokenInfo();
               }
 
               setResult(res.data);
@@ -182,12 +176,14 @@ const Home: NextPage = () => {
         <button
           onClick={async () => {
             try {
+              const token = getRefreshTokenInfo();
+              if (!token) return;
               const res = await axios.post<
                 {},
                 AxiosResponse<RefreshResponseBody>,
                 RefreshRequestBody
               >("/auth/refresh", {
-                refreshToken: localStorage.getItem("refresh-token")!,
+                refreshToken: token.token,
               });
 
               const {
@@ -205,20 +201,15 @@ const Home: NextPage = () => {
               } = res.data;
 
               if (!error) {
-                if (accessToken) setAccessToken(accessToken);
-                if (accessTokenExpiresInSeconds)
-                  setAccessTokenExpiresAt(
-                    Date.now() + accessTokenExpiresInSeconds * 1000
+                if (accessToken && accessTokenExpiresInSeconds) {
+                  setAccessTokenInfo(accessToken, accessTokenExpiresInSeconds);
+                }
+                if (refreshToken && refreshTokenExpiresInSeconds) {
+                  setRefreshTokenInfo(
+                    refreshToken,
+                    refreshTokenExpiresInSeconds
                   );
-                if (refreshToken && refreshTokenExpiresInSeconds)
-                  localStorage.setItem(
-                    "refresh-token",
-                    JSON.stringify({
-                      token: refreshToken,
-                      expiresAt:
-                        Date.now() + refreshTokenExpiresInSeconds * 1000,
-                    })
-                  );
+                }
               }
 
               setResult(res.data);
