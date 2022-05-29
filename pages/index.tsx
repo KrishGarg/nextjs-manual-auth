@@ -13,7 +13,7 @@ import {
   SignupResponseBody,
   MeRequestBody,
   MeResponseBody,
-} from "@/lib/auth/sharedTypes";
+} from "@/lib/types/endpoint";
 import { AxiosResponse } from "axios";
 import {
   deleteAccessTokenInfo,

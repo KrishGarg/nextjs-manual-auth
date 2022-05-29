@@ -6,8 +6,9 @@ import {
   handleErr,
 } from "@/authhelpers";
 import { logout } from "@/lib/auth/backend/auth";
-import { Req, Res } from "@/lib/auth/backend/constants";
-import { LogoutRequestBody, LogoutResponseBody } from "@/lib/auth/sharedTypes";
+
+import { Req, Res } from "@/types/general";
+import { LogoutRequestBody, LogoutResponseBody } from "@/types/endpoint";
 
 const handler = createHandler();
 handler.post(

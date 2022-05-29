@@ -1,8 +1,11 @@
 import { createIndexes } from "@/lib/db";
 import { createHandler, handleServerErr } from "@/authhelpers";
 
+import { HealthRequestBody, HealthResponseBody } from "@/types/endpoint";
+import { Req, Res } from "@/types/general";
+
 const handler = createHandler();
-handler.get(async (_, res) => {
+handler.get(async (_: Req<HealthRequestBody>, res: Res<HealthResponseBody>) => {
   try {
     await createIndexes();
   } catch (e) {

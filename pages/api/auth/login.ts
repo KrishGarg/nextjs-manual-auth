@@ -11,10 +11,10 @@ import {
 import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
-  Req,
-  Res,
 } from "@/lib/auth/backend/constants";
-import { LoginRequestBody, LoginResponseBody } from "@/lib/auth/sharedTypes";
+
+import { LoginRequestBody, LoginResponseBody } from "@/types/endpoint";
+import { Req, Res } from "@/types/general";
 
 const handler = createHandler();
 handler.post(

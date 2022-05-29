@@ -1,10 +1,10 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import nc from "next-connect";
 
-import { MW, Req, Res } from "@/lib/auth/backend/constants";
+import { MW, Req, Res } from "@/types/general";
 import { decodeToken, Payload } from "@/lib/auth/backend/tokens";
 
-const getAccessTokenFromRequest = (req: Req) => {
+const getAccessTokenFromRequest = (req: Req<any>) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return null;
@@ -24,7 +24,7 @@ const getRefreshTokenFromRequest = (req: Req<{ refreshToken?: string }>) => {
   return refreshToken;
 };
 
-const getUserIDFromReq = (req: Req): string | null => {
+const getUserIDFromReq = (req: Req<any>): string | null => {
   const accessToken = getAccessTokenFromRequest(req);
   if (!accessToken) {
     return null;
@@ -73,14 +73,14 @@ const handleErr = ({ res, statusCode, message, e }: HandleErrOpt) => {
   }
 };
 
-const handleServerErr = (res: Res, e?: unknown) =>
+const handleServerErr = (res: Res<any>, e?: unknown) =>
   handleErr({
     res,
     e,
     statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
   });
 
-const methodNotAllowed = (res: Res) =>
+const methodNotAllowed = (res: Res<any>) =>
   handleErr({
     res,
     statusCode: StatusCodes.NOT_FOUND,
@@ -89,11 +89,11 @@ const methodNotAllowed = (res: Res) =>
 const createHandler = () => {
   return nc<Req, Res>({
     onError: (err, _, res, next) => {
-      handleServerErr(res as Res, err);
+      handleServerErr(res as Res<any>, err);
       next();
     },
     onNoMatch: (_, res) => {
-      methodNotAllowed(res as Res);
+      methodNotAllowed(res as Res<any>);
     },
   });
 };
@@ -102,7 +102,7 @@ const authNeeded: MW = (req, res, next) => {
   const id = getUserIDFromReq(req);
   if (!id) {
     return handleErr({
-      res: res as Res,
+      res: res as Res<any>,
       statusCode: StatusCodes.UNAUTHORIZED,
     });
   }

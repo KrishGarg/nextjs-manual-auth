@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@/lib/*": ["lib/*"],
-      "@/authhelpers": ["lib/auth/backend/helpers"]
+      "@/authhelpers": ["lib/auth/backend/helpers"],
+      "@/types/*": ["lib/types/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

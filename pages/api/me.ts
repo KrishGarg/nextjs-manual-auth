@@ -3,8 +3,9 @@ import { User } from "@prisma/client";
 
 import { findUserById } from "@/lib/db";
 import { authNeeded, createHandler, handleErr } from "@/authhelpers";
-import { Req, Res } from "@/lib/auth/backend/constants";
-import { MeRequestBody, MeResponseBody } from "@/lib/auth/sharedTypes";
+
+import { Req, Res } from "@/types/general";
+import { MeRequestBody, MeResponseBody } from "@/types/endpoint";
 
 const handler = createHandler();
 handler.get(

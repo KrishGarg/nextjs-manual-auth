@@ -6,15 +6,15 @@ import { Tokens } from "@/lib/auth/backend/tokens";
 import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
-  Req,
-  Res,
 } from "@/lib/auth/backend/constants";
 import {
   createHandler,
   getAccessTokenFromRequest,
   handleErr,
 } from "@/authhelpers";
-import { SignupRequestBody, SignupResponseBody } from "@/lib/auth/sharedTypes";
+
+import { SignupRequestBody, SignupResponseBody } from "@/types/endpoint";
+import { Req, Res } from "@/types/general";
 
 const handler = createHandler();
 handler.post(

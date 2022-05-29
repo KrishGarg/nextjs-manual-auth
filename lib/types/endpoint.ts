@@ -1,4 +1,4 @@
-import { ApiData } from "@/lib/auth/backend/constants";
+import { ApiData } from "@/types/general";
 import { User } from "@prisma/client";
 
 export interface LoginRequestBody {
@@ -65,3 +65,7 @@ export interface MeRequestBody {}
 export interface MeResponseBody extends ApiData {
   user?: Omit<User, "password">;
 }
+
+export interface HealthRequestBody {}
+
+export interface HealthResponseBody extends ApiData {}
