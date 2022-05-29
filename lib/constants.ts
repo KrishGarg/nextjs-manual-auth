@@ -1,5 +1,5 @@
 import { CookieSerializeOptions } from "cookie";
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { Middleware } from "next-connect";
 
 export const ACCESS_TOKEN_COOKIE_NAME = "access-token";

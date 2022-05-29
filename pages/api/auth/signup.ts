@@ -3,64 +3,63 @@ import { getClientIp } from "request-ip";
 
 import { signup } from "@/lib/auth";
 import { Tokens } from "@/lib/tokens";
+import { Req, Res } from "@/lib/constants";
 import {
-  getTokensFromCookies,
-  setAccessAndRefreshTokenCookies,
-} from "@/lib/cookies";
-import { Req } from "@/lib/constants";
-import { createHandler, handleErr } from "@/lib/helpers";
-
-interface Body {
-  email?: string;
-  password?: string;
-}
+  createHandler,
+  getAccessTokenFromRequest,
+  handleErr,
+} from "@/lib/helpers";
+import { SignupRequestBody, SignupResponseBody } from "@/lib/sharedTypes";
 
 const handler = createHandler();
-handler.post(async (req: Req<Body>, res) => {
-  const { email, password } = req.body;
+handler.post(
+  async (req: Req<SignupRequestBody>, res: Res<SignupResponseBody>) => {
+    const { email, password } = req.body;
 
-  if (!email || !password) {
-    return handleErr({
-      res,
-      statusCode: StatusCodes.BAD_REQUEST,
-      message: "The email or/and password is/are missing.",
+    if (!email || !password) {
+      return handleErr({
+        res,
+        statusCode: StatusCodes.BAD_REQUEST,
+        message: "The email or/and password is/are missing.",
+      });
+    }
+
+    const accessTokenFromRequest = getAccessTokenFromRequest(req);
+
+    if (accessTokenFromRequest) {
+      return handleErr({
+        res,
+        statusCode: StatusCodes.NOT_ACCEPTABLE,
+        message: "You are already logged in.",
+      });
+    }
+
+    let tokens: Tokens;
+
+    try {
+      tokens = await signup(
+        email,
+        password,
+        req.headers["user-agent"],
+        getClientIp(req)
+      );
+    } catch (e) {
+      return handleErr({
+        res,
+        statusCode: StatusCodes.FORBIDDEN,
+        message: "Account Already Exists",
+      });
+    }
+
+    const { accessToken, refreshToken } = tokens;
+
+    return res.status(StatusCodes.OK).json({
+      message: "Signup Successful",
+      error: false,
+      accessToken,
+      refreshToken,
     });
   }
-
-  const { accessToken: accessTokenFromCookie } = getTokensFromCookies(req);
-
-  if (accessTokenFromCookie) {
-    return handleErr({
-      res,
-      statusCode: StatusCodes.NOT_ACCEPTABLE,
-      message: "You are already logged in.",
-    });
-  }
-
-  let tokens: Tokens;
-
-  try {
-    tokens = await signup(
-      email,
-      password,
-      req.headers["user-agent"],
-      getClientIp(req)
-    );
-  } catch (e) {
-    return handleErr({
-      res,
-      statusCode: StatusCodes.FORBIDDEN,
-      message: "Account Already Exists",
-    });
-  }
-
-  const { accessToken, refreshToken } = tokens;
-  setAccessAndRefreshTokenCookies(res, accessToken, refreshToken);
-
-  return res.status(StatusCodes.OK).json({
-    message: "Signup Successful",
-    error: false,
-  });
-});
+);
 
 export default handler;

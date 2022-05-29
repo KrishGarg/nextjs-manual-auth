@@ -100,8 +100,8 @@ const refreshTokens: RefreshTokensType = async (
     throw new Error("Invalid refresh token.");
   }
 
-  if (!userAgent) userAgent = "Unknown";
-  if (!ip) ip = "Unknown";
+  userAgent ??= "Unknown";
+  ip ??= "Unknown";
 
   // remove old token data
   await deleteTokenByID(token.id);

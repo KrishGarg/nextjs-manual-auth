@@ -1,13 +1,31 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 
-import { ApiData, MW, Req, Res } from "@/lib/constants";
-import { getTokensFromCookies } from "@/lib/cookies";
+import { MW, Req, Res } from "@/lib/constants";
 import { decodeToken, Payload } from "@/lib/tokens";
 
-const getUserIDFromReq = (req: NextApiRequest): string | null => {
-  const { accessToken } = getTokensFromCookies(req);
+const getAccessTokenFromRequest = (req: Req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return null;
+  }
+  const [type, token] = authHeader.split(" ");
+  if (type !== "Bearer") {
+    return null;
+  }
+  return token;
+};
+
+const getRefreshTokenFromRequest = (req: Req<{ refreshToken?: string }>) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return null;
+  }
+  return refreshToken;
+};
+
+const getUserIDFromReq = (req: Req): string | null => {
+  const accessToken = getAccessTokenFromRequest(req);
   if (!accessToken) {
     return null;
   }
@@ -21,7 +39,7 @@ const getUserIDFromReq = (req: NextApiRequest): string | null => {
 };
 
 interface HandleErrOpt {
-  res: NextApiResponse<ApiData>;
+  res: Res<any>;
   statusCode: StatusCodes;
   message?: string;
   e?: unknown;
@@ -55,14 +73,14 @@ const handleErr = ({ res, statusCode, message, e }: HandleErrOpt) => {
   }
 };
 
-const handleServerErr = (res: NextApiResponse<ApiData>, e?: unknown) =>
+const handleServerErr = (res: Res, e?: unknown) =>
   handleErr({
     res,
     e,
     statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
   });
 
-const methodNotAllowed = (res: NextApiResponse<ApiData>) =>
+const methodNotAllowed = (res: Res) =>
   handleErr({
     res,
     statusCode: StatusCodes.NOT_FOUND,
@@ -71,11 +89,11 @@ const methodNotAllowed = (res: NextApiResponse<ApiData>) =>
 const createHandler = () => {
   return nc<Req, Res>({
     onError: (err, _, res, next) => {
-      handleServerErr(res as NextApiResponse, err);
+      handleServerErr(res as Res, err);
       next();
     },
     onNoMatch: (_, res) => {
-      methodNotAllowed(res as NextApiResponse);
+      methodNotAllowed(res as Res);
     },
   });
 };
@@ -84,7 +102,7 @@ const authNeeded: MW = (req, res, next) => {
   const id = getUserIDFromReq(req);
   if (!id) {
     return handleErr({
-      res: res as NextApiResponse,
+      res: res as Res,
       statusCode: StatusCodes.UNAUTHORIZED,
     });
   }
@@ -99,4 +117,6 @@ export {
   handleErr,
   createHandler,
   authNeeded,
+  getAccessTokenFromRequest,
+  getRefreshTokenFromRequest,
 };
