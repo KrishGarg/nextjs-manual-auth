@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccessToken } from "./accesstoken";
+import { getAccessToken } from "./auth/frontend/accesstoken";
 
 const instance = axios.create({
   baseURL: "/api/",
@@ -8,7 +8,6 @@ const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
   const token = getAccessToken();
-  console.log(token);
   config!.headers!.Authorization = `Bearer ${token}`;
 
   return config;

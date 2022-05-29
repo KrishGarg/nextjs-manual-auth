@@ -5,7 +5,7 @@ import {
   REFRESH_TOKEN_MAX_AGE,
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
-} from "@/lib/constants";
+} from "@/lib/auth/backend/constants";
 
 interface Payload extends JwtPayload {
   userId: string;

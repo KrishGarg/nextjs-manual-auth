@@ -1,20 +1,20 @@
 import { StatusCodes } from "http-status-codes";
 import { getClientIp } from "request-ip";
 
-import { login } from "@/lib/auth";
-import { Tokens } from "@/lib/tokens";
+import { login } from "@/lib/auth/backend/auth";
+import { Tokens } from "@/lib/auth/backend/tokens";
 import {
   createHandler,
   handleErr,
   getAccessTokenFromRequest,
-} from "@/lib/helpers";
+} from "@/lib/auth/backend/helpers";
 import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
   Req,
   Res,
-} from "@/lib/constants";
-import { LoginRequestBody, LoginResponseBody } from "@/lib/sharedTypes";
+} from "@/lib/auth/backend/constants";
+import { LoginRequestBody, LoginResponseBody } from "@/lib/auth/sharedTypes";
 
 const handler = createHandler();
 handler.post(

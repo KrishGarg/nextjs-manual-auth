@@ -1,5 +1,5 @@
 import { createIndexes } from "@/lib/db";
-import { createHandler, handleServerErr } from "@/lib/helpers";
+import { createHandler, handleServerErr } from "@/lib/auth/backend/helpers";
 
 const handler = createHandler();
 handler.get(async (_, res) => {

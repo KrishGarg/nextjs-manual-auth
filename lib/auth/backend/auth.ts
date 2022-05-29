@@ -7,7 +7,7 @@ import {
   findTokenByID,
   deleteTokenByID,
 } from "@/lib/db";
-import { createTokens, decodeToken, Tokens } from "@/lib/tokens";
+import { createTokens, decodeToken, Tokens } from "@/lib/auth/backend/tokens";
 
 type LoginType = (
   email: string,

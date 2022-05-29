@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   REFRESH_TOKEN_MAX_AGE,
   TOKEN_CREATED_AT_INDEX_NAME,
-} from "@/lib/constants";
+} from "@/lib/auth/backend/constants";
 
 const prisma = new PrismaClient();
 
@@ -69,6 +69,8 @@ const createIndexes = async () => {
     ],
   });
 };
+
+// INFO: You can add more db functions here
 
 export {
   findUserByEmail,

@@ -4,10 +4,10 @@ import {
   createHandler,
   getRefreshTokenFromRequest,
   handleErr,
-} from "@/lib/helpers";
-import { logout } from "@/lib/auth";
-import { Req, Res } from "@/lib/constants";
-import { LogoutRequestBody, LogoutResponseBody } from "@/lib/sharedTypes";
+} from "@/lib/auth/backend/helpers";
+import { logout } from "@/lib/auth/backend/auth";
+import { Req, Res } from "@/lib/auth/backend/constants";
+import { LogoutRequestBody, LogoutResponseBody } from "@/lib/auth/sharedTypes";
 
 const handler = createHandler();
 handler.post(

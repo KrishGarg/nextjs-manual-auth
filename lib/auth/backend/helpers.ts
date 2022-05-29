@@ -1,8 +1,8 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import nc from "next-connect";
 
-import { MW, Req, Res } from "@/lib/constants";
-import { decodeToken, Payload } from "@/lib/tokens";
+import { MW, Req, Res } from "@/lib/auth/backend/constants";
+import { decodeToken, Payload } from "@/lib/auth/backend/tokens";
 
 const getAccessTokenFromRequest = (req: Req) => {
   const authHeader = req.headers.authorization;

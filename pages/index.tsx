@@ -13,9 +13,12 @@ import {
   SignupResponseBody,
   MeRequestBody,
   MeResponseBody,
-} from "@/lib/sharedTypes";
+} from "@/lib/auth/sharedTypes";
 import { AxiosResponse } from "axios";
-import { setAccessToken, setAccessTokenExpiresAt } from "@/lib/accesstoken";
+import {
+  setAccessToken,
+  setAccessTokenExpiresAt,
+} from "@/lib/auth/frontend/accesstoken";
 // normally all of these would be in different pages
 
 // TODO: Clean up and organize code better

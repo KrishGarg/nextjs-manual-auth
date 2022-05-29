@@ -1,4 +1,4 @@
-import { ApiData } from "@/lib/constants";
+import { ApiData } from "@/lib/auth/backend/constants";
 import { User } from "@prisma/client";
 
 export interface LoginRequestBody {
