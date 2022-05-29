@@ -3,7 +3,12 @@ import { getClientIp } from "request-ip";
 
 import { signup } from "@/lib/auth";
 import { Tokens } from "@/lib/tokens";
-import { Req, Res } from "@/lib/constants";
+import {
+  ACCESS_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_MAX_AGE,
+  Req,
+  Res,
+} from "@/lib/constants";
 import {
   createHandler,
   getAccessTokenFromRequest,
@@ -56,8 +61,16 @@ handler.post(
     return res.status(StatusCodes.OK).json({
       message: "Signup Successful",
       error: false,
-      accessToken,
-      refreshToken,
+      tokens: {
+        access: {
+          token: accessToken,
+          expiresInSeconds: ACCESS_TOKEN_MAX_AGE,
+        },
+        refresh: {
+          token: refreshToken,
+          expiresInSeconds: REFRESH_TOKEN_MAX_AGE,
+        },
+      },
     });
   }
 );

@@ -15,8 +15,10 @@ import {
   MeResponseBody,
 } from "@/lib/sharedTypes";
 import { AxiosResponse } from "axios";
-import { setAccessToken } from "@/lib/accesstoken";
+import { setAccessToken, setAccessTokenExpiresAt } from "@/lib/accesstoken";
 // normally all of these would be in different pages
+
+// TODO: Clean up and organize code better
 
 const testCreds = {
   email: "test1@mail.com",
@@ -41,14 +43,35 @@ const Home: NextPage = () => {
                 password: testCreds.password,
               });
 
-              const { accessToken, refreshToken, error } = res.data;
+              const {
+                tokens: {
+                  access: {
+                    token: accessToken,
+                    expiresInSeconds: accessTokenExpiresInSeconds,
+                  },
+                  refresh: {
+                    token: refreshToken,
+                    expiresInSeconds: refreshTokenExpiresInSeconds,
+                  },
+                },
+                error,
+              } = res.data;
 
               if (!error) {
-                setAccessToken(accessToken ? accessToken : "");
-                localStorage.setItem(
-                  "refresh-token",
-                  refreshToken ? refreshToken : ""
-                );
+                if (accessToken) setAccessToken(accessToken);
+                if (accessTokenExpiresInSeconds)
+                  setAccessTokenExpiresAt(
+                    Date.now() + accessTokenExpiresInSeconds * 1000
+                  );
+                if (refreshToken && refreshTokenExpiresInSeconds)
+                  localStorage.setItem(
+                    "refresh-token",
+                    JSON.stringify({
+                      token: refreshToken,
+                      expiresAt:
+                        Date.now() + refreshTokenExpiresInSeconds * 1000,
+                    })
+                  );
               }
               setResult(res.data);
             } catch (e) {
@@ -70,14 +93,36 @@ const Home: NextPage = () => {
                 password: testCreds.password,
               });
 
-              const { accessToken, refreshToken, error } = res.data;
+              const {
+                tokens: {
+                  access: {
+                    token: accessToken,
+                    expiresInSeconds: accessTokenExpiresInSeconds,
+                  },
+
+                  refresh: {
+                    token: refreshToken,
+                    expiresInSeconds: refreshTokenExpiresInSeconds,
+                  },
+                },
+                error,
+              } = res.data;
 
               if (!error) {
-                setAccessToken(accessToken ? accessToken : "");
-                localStorage.setItem(
-                  "refresh-token",
-                  refreshToken ? refreshToken : ""
-                );
+                if (accessToken) setAccessToken(accessToken);
+                if (accessTokenExpiresInSeconds)
+                  setAccessTokenExpiresAt(
+                    Date.now() + accessTokenExpiresInSeconds * 1000
+                  );
+                if (refreshToken && refreshTokenExpiresInSeconds)
+                  localStorage.setItem(
+                    "refresh-token",
+                    JSON.stringify({
+                      token: refreshToken,
+                      expiresAt:
+                        Date.now() + refreshTokenExpiresInSeconds * 1000,
+                    })
+                  );
               }
               setResult(res.data);
             } catch (e) {
@@ -112,14 +157,15 @@ const Home: NextPage = () => {
                 AxiosResponse<LogoutResponseBody>,
                 LogoutRequestBody
               >("/auth/logout", {
-                refreshToken: localStorage.getItem("refresh-token")!,
+                refreshToken: JSON.parse(localStorage.getItem("refresh-token")!)
+                  ?.token,
               });
 
               const { error } = res.data;
 
               if (!error) {
                 setAccessToken("");
-                localStorage.setItem("refresh-token", "");
+                localStorage.setItem("refresh-token", JSON.stringify({}));
               }
 
               setResult(res.data);
@@ -141,14 +187,35 @@ const Home: NextPage = () => {
                 refreshToken: localStorage.getItem("refresh-token")!,
               });
 
-              const { error, accessToken, refreshToken } = res.data;
+              const {
+                tokens: {
+                  access: {
+                    token: accessToken,
+                    expiresInSeconds: accessTokenExpiresInSeconds,
+                  },
+                  refresh: {
+                    token: refreshToken,
+                    expiresInSeconds: refreshTokenExpiresInSeconds,
+                  },
+                },
+                error,
+              } = res.data;
 
               if (!error) {
-                setAccessToken(accessToken ? accessToken : "");
-                localStorage.setItem(
-                  "refresh-token",
-                  refreshToken ? refreshToken : ""
-                );
+                if (accessToken) setAccessToken(accessToken);
+                if (accessTokenExpiresInSeconds)
+                  setAccessTokenExpiresAt(
+                    Date.now() + accessTokenExpiresInSeconds * 1000
+                  );
+                if (refreshToken && refreshTokenExpiresInSeconds)
+                  localStorage.setItem(
+                    "refresh-token",
+                    JSON.stringify({
+                      token: refreshToken,
+                      expiresAt:
+                        Date.now() + refreshTokenExpiresInSeconds * 1000,
+                    })
+                  );
               }
 
               setResult(res.data);

@@ -1,21 +1,9 @@
-import { CookieSerializeOptions } from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Middleware } from "next-connect";
-
-export const ACCESS_TOKEN_COOKIE_NAME = "access-token";
-export const REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
 
 // Below in seconds.
 export const ACCESS_TOKEN_MAX_AGE = 60 * 15; // 15 minutes
 export const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 7; // 1 week
-
-export const COOKIE_PATH = "/api";
-
-export const DEFAULT_COOKIE_SERIALIZE_OPTIONS: CookieSerializeOptions = {
-  httpOnly: true,
-  secure: true,
-  path: COOKIE_PATH,
-};
 
 export interface ApiData {
   message: string;

@@ -7,8 +7,16 @@ export interface LoginRequestBody {
 }
 
 export interface LoginResponseBody extends ApiData {
-  accessToken?: string;
-  refreshToken?: string;
+  tokens: {
+    access: {
+      token?: string;
+      expiresInSeconds?: number;
+    };
+    refresh: {
+      token?: string;
+      expiresInSeconds?: number;
+    };
+  };
 }
 
 export interface SignupRequestBody {
@@ -17,8 +25,16 @@ export interface SignupRequestBody {
 }
 
 export interface SignupResponseBody extends ApiData {
-  accessToken?: string;
-  refreshToken?: string;
+  tokens: {
+    access: {
+      token?: string;
+      expiresInSeconds?: number;
+    };
+    refresh: {
+      token?: string;
+      expiresInSeconds?: number;
+    };
+  };
 }
 
 export interface LogoutRequestBody {
@@ -32,8 +48,16 @@ export interface RefreshRequestBody {
 }
 
 export interface RefreshResponseBody extends ApiData {
-  accessToken?: string;
-  refreshToken?: string;
+  tokens: {
+    access: {
+      token?: string;
+      expiresInSeconds?: number;
+    };
+    refresh: {
+      token?: string;
+      expiresInSeconds?: number;
+    };
+  };
 }
 
 export interface MeRequestBody {}

@@ -1,4 +1,5 @@
 let accessToken = "";
+let accessTokenExpiresAt = 0;
 
 const setAccessToken = (val: string) => {
   accessToken = val;
@@ -9,4 +10,18 @@ const getAccessToken = () => {
   return accessToken;
 };
 
-export { setAccessToken, getAccessToken };
+const setAccessTokenExpiresAt = (val: number) => {
+  accessTokenExpiresAt = val;
+  return;
+};
+
+const getAccessTokenExpiresAt = () => {
+  return accessTokenExpiresAt;
+};
+
+export {
+  setAccessToken,
+  getAccessToken,
+  setAccessTokenExpiresAt,
+  getAccessTokenExpiresAt,
+};

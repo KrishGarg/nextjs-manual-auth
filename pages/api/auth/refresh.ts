@@ -8,7 +8,12 @@ import {
   handleErr,
 } from "@/lib/helpers";
 import { Tokens } from "@/lib/tokens";
-import { Req, Res } from "@/lib/constants";
+import {
+  ACCESS_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_MAX_AGE,
+  Req,
+  Res,
+} from "@/lib/constants";
 import { RefreshRequestBody, RefreshResponseBody } from "@/lib/sharedTypes";
 
 const handler = createHandler();
@@ -45,8 +50,16 @@ handler.post(
     return res.status(StatusCodes.OK).json({
       error: false,
       message: "Tokens successfully refreshed",
-      accessToken,
-      refreshToken: newRefreshToken,
+      tokens: {
+        access: {
+          token: accessToken,
+          expiresInSeconds: ACCESS_TOKEN_MAX_AGE,
+        },
+        refresh: {
+          token: newRefreshToken,
+          expiresInSeconds: REFRESH_TOKEN_MAX_AGE,
+        },
+      },
     });
   }
 );

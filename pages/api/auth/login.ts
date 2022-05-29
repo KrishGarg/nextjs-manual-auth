@@ -8,7 +8,12 @@ import {
   handleErr,
   getAccessTokenFromRequest,
 } from "@/lib/helpers";
-import { Req, Res } from "@/lib/constants";
+import {
+  ACCESS_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_MAX_AGE,
+  Req,
+  Res,
+} from "@/lib/constants";
 import { LoginRequestBody, LoginResponseBody } from "@/lib/sharedTypes";
 
 const handler = createHandler();
@@ -62,8 +67,16 @@ handler.post(
     return res.status(StatusCodes.OK).json({
       message: "Login Successful",
       error: false,
-      accessToken,
-      refreshToken,
+      tokens: {
+        access: {
+          token: accessToken,
+          expiresInSeconds: ACCESS_TOKEN_MAX_AGE,
+        },
+        refresh: {
+          token: refreshToken,
+          expiresInSeconds: REFRESH_TOKEN_MAX_AGE,
+        },
+      },
     });
   }
 );
