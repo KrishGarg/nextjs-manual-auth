@@ -3,28 +3,15 @@ import { useState } from "react";
 
 import axios from "@/lib/axios";
 import {
-  LoginRequestBody,
-  LoginResponseBody,
-  LogoutRequestBody,
-  LogoutResponseBody,
-  RefreshRequestBody,
-  RefreshResponseBody,
-  SignupRequestBody,
-  SignupResponseBody,
-  MeRequestBody,
-  MeResponseBody,
-} from "@/lib/types/endpoint";
-import { AxiosResponse } from "axios";
-import {
-  deleteAccessTokenInfo,
-  deleteRefreshTokenInfo,
-  getRefreshTokenInfo,
-  setAccessTokenInfo,
-  setRefreshTokenInfo,
-} from "@/lib/auth/frontend/tokens";
-// normally all of these would be in different pages
+  login,
+  logout,
+  refresh,
+  signup,
+  superlogout,
+} from "@/lib/auth/frontend/methods";
 
-// TODO: Clean up and organize code better
+import { AxiosResponse } from "axios";
+import { MeRequestBody, MeResponseBody } from "@/lib/types/endpoint";
 
 const testCreds = {
   email: "test1@mail.com",
@@ -39,91 +26,16 @@ const Home: NextPage = () => {
       <div>
         <button
           onClick={async () => {
-            try {
-              const res = await axios.post<
-                {},
-                AxiosResponse<SignupResponseBody>,
-                SignupRequestBody
-              >("/auth/signup", {
-                email: testCreds.email,
-                password: testCreds.password,
-              });
-
-              const {
-                tokens: {
-                  access: {
-                    token: accessToken,
-                    expiresInSeconds: accessTokenExpiresInSeconds,
-                  },
-                  refresh: {
-                    token: refreshToken,
-                    expiresInSeconds: refreshTokenExpiresInSeconds,
-                  },
-                },
-                error,
-              } = res.data;
-
-              if (!error) {
-                if (accessToken && accessTokenExpiresInSeconds) {
-                  setAccessTokenInfo(accessToken, accessTokenExpiresInSeconds);
-                }
-                if (refreshToken && refreshTokenExpiresInSeconds) {
-                  setRefreshTokenInfo(
-                    refreshToken,
-                    refreshTokenExpiresInSeconds
-                  );
-                }
-              }
-              setResult(res.data);
-            } catch (e) {
-              console.error(e);
-            }
+            const data = await signup(testCreds.email, testCreds.password);
+            if (data) setResult(data);
           }}
         >
           Signup
         </button>
         <button
           onClick={async () => {
-            try {
-              const res = await axios.post<
-                {},
-                AxiosResponse<LoginResponseBody>,
-                LoginRequestBody
-              >("/auth/login", {
-                email: testCreds.email,
-                password: testCreds.password,
-              });
-
-              const {
-                tokens: {
-                  access: {
-                    token: accessToken,
-                    expiresInSeconds: accessTokenExpiresInSeconds,
-                  },
-
-                  refresh: {
-                    token: refreshToken,
-                    expiresInSeconds: refreshTokenExpiresInSeconds,
-                  },
-                },
-                error,
-              } = res.data;
-
-              if (!error) {
-                if (accessToken && accessTokenExpiresInSeconds) {
-                  setAccessTokenInfo(accessToken, accessTokenExpiresInSeconds);
-                }
-                if (refreshToken && refreshTokenExpiresInSeconds) {
-                  setRefreshTokenInfo(
-                    refreshToken,
-                    refreshTokenExpiresInSeconds
-                  );
-                }
-              }
-              setResult(res.data);
-            } catch (e) {
-              console.error(e);
-            }
+            const data = await login(testCreds.email, testCreds.password);
+            if (data) setResult(data);
           }}
         >
           Login
@@ -147,78 +59,27 @@ const Home: NextPage = () => {
         </button>
         <button
           onClick={async () => {
-            try {
-              const token = getRefreshTokenInfo();
-              if (!token) return;
-              const res = await axios.post<
-                {},
-                AxiosResponse<LogoutResponseBody>,
-                LogoutRequestBody
-              >("/auth/logout", {
-                refreshToken: token.token,
-              });
-
-              const { error } = res.data;
-
-              if (!error) {
-                deleteAccessTokenInfo();
-                deleteRefreshTokenInfo();
-              }
-
-              setResult(res.data);
-            } catch (e) {
-              console.error(e);
-            }
+            const data = await logout();
+            if (data) setResult(data);
           }}
         >
           Logout
         </button>
         <button
           onClick={async () => {
-            try {
-              const token = getRefreshTokenInfo();
-              if (!token) return;
-              const res = await axios.post<
-                {},
-                AxiosResponse<RefreshResponseBody>,
-                RefreshRequestBody
-              >("/auth/refresh", {
-                refreshToken: token.token,
-              });
-
-              const {
-                tokens: {
-                  access: {
-                    token: accessToken,
-                    expiresInSeconds: accessTokenExpiresInSeconds,
-                  },
-                  refresh: {
-                    token: refreshToken,
-                    expiresInSeconds: refreshTokenExpiresInSeconds,
-                  },
-                },
-                error,
-              } = res.data;
-
-              if (!error) {
-                if (accessToken && accessTokenExpiresInSeconds) {
-                  setAccessTokenInfo(accessToken, accessTokenExpiresInSeconds);
-                }
-                if (refreshToken && refreshTokenExpiresInSeconds) {
-                  setRefreshTokenInfo(
-                    refreshToken,
-                    refreshTokenExpiresInSeconds
-                  );
-                }
-              }
-
-              setResult(res.data);
-            } catch (e) {
-              console.error(e);
-            }
+            const data = await refresh();
+            if (data) setResult(data);
           }}
         >
           Refresh Tokens
+        </button>
+        <button
+          onClick={async () => {
+            const data = await superlogout();
+            if (data) setResult(data);
+          }}
+        >
+          Super Logout
         </button>
       </div>
       <pre>

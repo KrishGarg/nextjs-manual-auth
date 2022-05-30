@@ -69,3 +69,7 @@ export interface MeResponseBody extends ApiData {
 export interface HealthRequestBody {}
 
 export interface HealthResponseBody extends ApiData {}
+
+export interface SuperlogoutRequestBody {}
+
+export interface SuperlogoutResponseBody extends ApiData {}

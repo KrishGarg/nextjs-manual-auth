@@ -70,6 +70,13 @@ const createIndexes = async () => {
   });
 };
 
+const removeAllUserSessions = async (userId: string) =>
+  await prisma.token.deleteMany({
+    where: {
+      userId,
+    },
+  });
+
 // INFO: You can add more db functions here
 
 export {
@@ -80,4 +87,5 @@ export {
   findTokenByID,
   deleteTokenByID,
   createIndexes,
+  removeAllUserSessions,
 };
