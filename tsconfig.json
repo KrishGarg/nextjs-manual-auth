@@ -17,9 +17,10 @@
     "useUnknownInCatchVariables": true,
     "baseUrl": ".",
     "paths": {
-      "@/lib/*": ["lib/*"],
-      "@/authhelpers": ["lib/auth/backend/helpers"],
-      "@/types/*": ["lib/types/*"]
+      "@/lib/*": ["src/lib/*"],
+      "@/authhelpers": ["src/lib/auth/backend/helpers"],
+      "@/server/*": ["src/server/*"],
+      "@/hooks/*": ["src/hooks/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
