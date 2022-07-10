@@ -1,27 +1,10 @@
-import {
-  authNeeded,
-  createHandler,
-  handleErr,
-} from "@/lib/auth/backend/helpers";
-import { removeAllUserSessions } from "@/lib/db";
-import { StatusCodes } from "http-status-codes";
+import { NextApiHandler } from "next";
 
-const handler = createHandler();
+// TODO: Shift `superlogout` to TRPC function
+// INFO: will logout the user from all devices
 
-handler.post(authNeeded, async (req, res) => {
-  try {
-    await removeAllUserSessions(req.userId);
-  } catch (e) {
-    return handleErr({
-      res,
-      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
-      e,
-    });
-  }
-  return res.json({
-    message: "All user sessions successfully removed",
-    error: false,
-  });
-});
+const handler: NextApiHandler = (_, res) => {
+  return res.end();
+};
 
 export default handler;

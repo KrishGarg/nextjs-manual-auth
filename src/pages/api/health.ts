@@ -1,20 +1,10 @@
-import { createIndexes } from "@/lib/db";
-import { createHandler, handleServerErr } from "@/authhelpers";
+import { NextApiHandler } from "next";
 
-import { HealthRequestBody, HealthResponseBody } from "@/types/endpoint";
-import { Req, Res } from "@/types/general";
+// TODO: Shift `health` to TRPC function
+// INFO: create `ensureIndexes` function
 
-const handler = createHandler();
-handler.get(async (_: Req<HealthRequestBody>, res: Res<HealthResponseBody>) => {
-  try {
-    await createIndexes();
-  } catch (e) {
-    return handleServerErr(res, e);
-  }
-  res.json({
-    message: "API is up and running",
-    error: false,
-  });
-});
+const handler: NextApiHandler = (_, res) => {
+  return res.end();
+};
 
 export default handler;
