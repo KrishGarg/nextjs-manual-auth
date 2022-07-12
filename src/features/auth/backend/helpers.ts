@@ -13,14 +13,6 @@ const getAccessTokenFromRequest = (req: NextApiRequest) => {
   return token;
 };
 
-const getRefreshTokenFromRequest = (req: NextApiRequest) => {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    return null;
-  }
-  return refreshToken;
-};
-
 const getUserIDFromReq = (req: NextApiRequest): string | null => {
   const accessToken = getAccessTokenFromRequest(req);
   if (!accessToken) {
@@ -35,8 +27,4 @@ const getUserIDFromReq = (req: NextApiRequest): string | null => {
   return payload.userId;
 };
 
-export {
-  getUserIDFromReq,
-  getAccessTokenFromRequest,
-  getRefreshTokenFromRequest,
-};
+export { getUserIDFromReq, getAccessTokenFromRequest };
