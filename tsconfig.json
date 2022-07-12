@@ -17,10 +17,7 @@
     "useUnknownInCatchVariables": true,
     "baseUrl": ".",
     "paths": {
-      "@/lib/*": ["src/lib/*"],
-      "@/server/*": ["src/server/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/features/*": ["src/features/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
