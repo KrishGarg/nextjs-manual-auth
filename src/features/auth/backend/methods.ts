@@ -1,4 +1,5 @@
 import { hash, verify } from "argon2";
+import * as trpc from "@trpc/server";
 
 import {
   createUser,
@@ -24,15 +25,22 @@ const login: LoginType = async (email, password, userAgent, ip) => {
   const user = await findUserByEmail(email);
 
   if (!user) {
-    throw new Error("No user with the given email exists.");
+    throw new trpc.TRPCError({
+      message: "No user with the given email exists.",
+      code: "FORBIDDEN",
+    });
   }
 
   if (!(await verify(user.password, password))) {
-    throw new Error("Incorrect password.");
+    throw new trpc.TRPCError({
+      message: "Incorrect password.",
+      code: "FORBIDDEN",
+    });
   }
 
-  if (!userAgent) userAgent = "Unknown";
-  if (!ip) ip = "Unknown";
+  userAgent ??= "Unknown";
+  ip ??= "Unknown";
+
   const tokenInfo = await addTokenSession(user.id, ip, userAgent);
 
   const { accessToken, refreshToken } = createTokens(
@@ -56,15 +64,19 @@ const signup: SignupType = async (email, password, userAgent, ip) => {
   const user = await findUserByEmail(email);
 
   if (user) {
-    throw new Error("User with the given email already exists.");
+    throw new trpc.TRPCError({
+      message: "User with the given email already exists.",
+      code: "FORBIDDEN",
+    });
   }
 
   const passwordHash = await hash(password);
 
   const newUser = await createUser(email, passwordHash);
 
-  if (!userAgent) userAgent = "Unknown";
-  if (!ip) ip = "Unknown";
+  userAgent ??= "Unknown";
+  ip ??= "Unknown";
+
   const tokenInfo = await addTokenSession(newUser.id, ip, userAgent);
 
   const { accessToken, refreshToken } = createTokens(
@@ -91,17 +103,26 @@ const refreshTokens: RefreshTokensType = async (
   const { userId, tokenId } = decodeToken(oldRefreshToken, "refresh");
 
   if (!tokenId) {
-    throw new Error("Invalid refresh token.");
+    throw new trpc.TRPCError({
+      message: "Invalid refresh token.",
+      code: "FORBIDDEN",
+    });
   }
 
   const token = await findTokenByID(tokenId);
 
   if (!token) {
-    throw new Error("Invalid refresh token.");
+    throw new trpc.TRPCError({
+      message: "Invalid refresh token.",
+      code: "FORBIDDEN",
+    });
   }
 
   if (token.userId !== userId) {
-    throw new Error("Invalid refresh token.");
+    throw new trpc.TRPCError({
+      message: "Invalid refresh token.",
+      code: "FORBIDDEN",
+    });
   }
 
   userAgent ??= "Unknown";

@@ -1,4 +1,5 @@
 import { JwtPayload, sign, verify } from "jsonwebtoken";
+import * as trpc from "@trpc/server";
 
 import {
   ACCESS_TOKEN_MAX_AGE,
@@ -16,7 +17,10 @@ type CreateAccessTokenType = (data: Payload) => string;
 
 const createAccessToken: CreateAccessTokenType = (data) => {
   if (!ACCESS_TOKEN_SECRET) {
-    throw new Error("No access token secret found.");
+    throw new trpc.TRPCError({
+      message: "No access token secret found.",
+      code: "INTERNAL_SERVER_ERROR",
+    });
   }
 
   return sign(data, ACCESS_TOKEN_SECRET, {
@@ -28,7 +32,10 @@ type CreateRefreshTokenType = (data: Payload, tokenId: string) => string;
 
 const createRefreshToken: CreateRefreshTokenType = (data, tokenId) => {
   if (!REFRESH_TOKEN_SECRET) {
-    throw new Error("No refresh token secret found.");
+    throw new trpc.TRPCError({
+      message: "No refresh token secret found.",
+      code: "INTERNAL_SERVER_ERROR",
+    });
   }
 
   const refreshToken = sign(
@@ -60,7 +67,10 @@ type DecodeTokenType = (token: string, type: "access" | "refresh") => Payload;
 
 const decodeToken: DecodeTokenType = (token, type) => {
   if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
-    throw new Error("No access or refresh token secret.");
+    throw new trpc.TRPCError({
+      message: "No access or refresh token secret found.",
+      code: "INTERNAL_SERVER_ERROR",
+    });
   }
 
   const secret = type === "access" ? ACCESS_TOKEN_SECRET : REFRESH_TOKEN_SECRET;
