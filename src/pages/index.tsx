@@ -8,7 +8,7 @@ import {
   getRefreshTokenInfo,
   setAccessTokenInfo,
   setRefreshTokenInfo,
-} from "@/lib/auth/frontend/tokens";
+} from "@/features/auth/frontend/tokens";
 
 const testCreds = {
   email: "test1@mail.com",

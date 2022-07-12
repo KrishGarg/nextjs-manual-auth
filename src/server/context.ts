@@ -1,4 +1,4 @@
-import { getUserIDFromReq } from "@/lib/auth/backend/helpers";
+import { getUserIDFromReq } from "@/features/auth/backend/helpers";
 import * as trpc from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 

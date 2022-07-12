@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   REFRESH_TOKEN_MAX_AGE,
   TOKEN_CREATED_AT_INDEX_NAME,
-} from "@/lib/auth/backend/constants";
+} from "@/features/auth/backend/constants";
 
 const prisma = new PrismaClient();
 
