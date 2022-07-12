@@ -1,5 +1,6 @@
-import prisma from "@/lib/prisma";
+import { Token, User } from "@prisma/client";
 
+import prisma from "@/lib/prisma";
 import {
   REFRESH_TOKEN_MAX_AGE,
   TOKEN_CREATED_AT_INDEX_NAME,
@@ -20,7 +21,22 @@ const createUser = async (email: string, hashedPassword: string) =>
     },
   });
 
-const findUserById = async (id: string, tokens: boolean = false) =>
+type FindUserById = <B extends boolean = false>(
+  id: string,
+  tokens?: B
+) => B extends true
+  ? Promise<
+      | (User & {
+          tokens: Token[];
+        })
+      | null
+    >
+  : Promise<User | null>;
+
+const findUserById: FindUserById = async (
+  id: string,
+  tokens: boolean = false
+) =>
   await prisma.user.findUnique({
     where: {
       id,

@@ -2,7 +2,7 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { getClientIp } from "request-ip";
 
-import { createRouter } from "@/server/createRouter";
+import { createProtectedRouter, createRouter } from "@/server/createRouter";
 import {
   login,
   logout,
@@ -14,7 +14,7 @@ import {
   REFRESH_TOKEN_MAX_AGE,
 } from "@/features/auth/backend/constants";
 
-const auth = createRouter()
+const unprotectedRouter = createRouter()
   .mutation("login", {
     input: z.object({
       email: z.string().email(),
@@ -87,8 +87,9 @@ const auth = createRouter()
         },
       };
     },
-  })
+  });
 
+const protectedRouter = createProtectedRouter()
   .mutation("logout", {
     input: z.object({
       refreshToken: z.string(),
@@ -129,5 +130,7 @@ const auth = createRouter()
       };
     },
   });
+
+const auth = createRouter().merge(unprotectedRouter).merge(protectedRouter);
 
 export default auth;
