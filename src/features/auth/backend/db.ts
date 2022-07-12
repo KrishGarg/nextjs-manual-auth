@@ -76,7 +76,7 @@ const removeAllUserSessions = async (userId: string) =>
     },
   });
 
-// INFO: You can add more db functions here
+// INFO: You can add more auth related db functions here
 
 export {
   findUserByEmail,
