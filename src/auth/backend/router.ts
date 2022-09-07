@@ -129,7 +129,7 @@ const protectedRouter = createProtectedRouter()
 
   .mutation("superlogout", {
     async resolve({ ctx }) {
-      removeAllUserSessions(ctx.userId);
+      await removeAllUserSessions(ctx.userId);
     },
   });
 
