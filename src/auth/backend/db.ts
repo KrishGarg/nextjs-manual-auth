@@ -26,18 +26,17 @@ type FindUserById = <B extends boolean = false>(
   tokens?: B
 ) => B extends true
   ? Promise<
-      | (User & {
+      | User & {
           tokens: Token[];
-        })
-      | null
+        }
     >
-  : Promise<User | null>;
+  : Promise<User>;
 
 const findUserById: FindUserById = async (
   id: string,
   tokens: boolean = false
 ) =>
-  await prisma.user.findUnique({
+  await prisma.user.findUniqueOrThrow({
     where: {
       id,
     },

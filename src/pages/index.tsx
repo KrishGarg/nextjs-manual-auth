@@ -71,6 +71,10 @@ const Home: NextPage = () => {
       deleteRefreshTokenInfo();
     },
   });
+  const me = trpc.useQuery(["user.me"], {
+    onSettled,
+    enabled: false,
+  });
 
   return (
     <>
@@ -96,7 +100,13 @@ const Home: NextPage = () => {
         >
           Login
         </button>
-        <button onClick={async () => {}}>Me</button>
+        <button
+          onClick={async () => {
+            me.refetch();
+          }}
+        >
+          Me
+        </button>
         <button
           onClick={async () => {
             const refreshToken = getRefreshTokenInfo();
