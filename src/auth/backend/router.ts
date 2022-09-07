@@ -3,16 +3,11 @@ import { z } from "zod";
 import { getClientIp } from "request-ip";
 
 import { createProtectedRouter, createRouter } from "@/server/createRouter";
-import {
-  login,
-  logout,
-  refreshTokens,
-  signup,
-} from "@/features/auth/backend/methods";
+import { login, logout, refreshTokens, signup } from "@/auth/backend/methods";
 import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
-} from "@/features/auth/backend/constants";
+} from "@/auth/backend/constants";
 
 const unprotectedRouter = createRouter()
   .mutation("login", {

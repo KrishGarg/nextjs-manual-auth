@@ -1,1 +1,1 @@
-export { default } from "@/features/auth/backend/router";
+export { default } from "@/auth/backend/router";

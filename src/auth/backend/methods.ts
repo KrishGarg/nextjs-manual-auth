@@ -7,12 +7,8 @@ import {
   addTokenSession,
   findTokenByID,
   deleteTokenByID,
-} from "src/features/auth/backend/db";
-import {
-  createTokens,
-  decodeToken,
-  Tokens,
-} from "@/features/auth/backend/tokens";
+} from "@/auth/backend/db";
+import { createTokens, decodeToken, Tokens } from "@/auth/backend/tokens";
 
 type LoginType = (
   email: string,

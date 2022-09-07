@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import {
   REFRESH_TOKEN_MAX_AGE,
   TOKEN_CREATED_AT_INDEX_NAME,
-} from "@/features/auth/backend/constants";
+} from "@/auth/backend/constants";
 
 const findUserByEmail = async (email: string) =>
   await prisma.user.findFirst({

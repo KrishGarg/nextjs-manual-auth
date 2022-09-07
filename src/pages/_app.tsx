@@ -4,7 +4,7 @@ import { withTRPC } from "@trpc/next";
 import type { AppType } from "next/dist/shared/lib/utils";
 import type { AppRouter } from "@/server/routers";
 
-import { getAccessTokenInfo } from "@/features/auth/frontend/tokens";
+import { getAccessTokenInfo } from "@/auth/frontend/tokens";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return <Component {...pageProps} />;

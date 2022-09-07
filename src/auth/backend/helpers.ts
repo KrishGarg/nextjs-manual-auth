@@ -1,4 +1,4 @@
-import { decodeToken, Payload } from "@/features/auth/backend/tokens";
+import { decodeToken, Payload } from "@/auth/backend/tokens";
 import { NextApiRequest } from "next";
 
 const getAccessTokenFromRequest = (req: NextApiRequest) => {
