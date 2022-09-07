@@ -8,6 +8,7 @@ import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/auth/backend/constants";
+import { removeAllUserSessions } from "@/auth/backend/db";
 
 const unprotectedRouter = createRouter()
   .mutation("login", {
@@ -123,6 +124,12 @@ const protectedRouter = createProtectedRouter()
           },
         },
       };
+    },
+  })
+
+  .mutation("superlogout", {
+    async resolve({ ctx }) {
+      removeAllUserSessions(ctx.userId);
     },
   });
 

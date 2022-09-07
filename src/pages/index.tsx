@@ -64,6 +64,13 @@ const Home: NextPage = () => {
       deleteRefreshTokenInfo();
     },
   });
+  const superlogout = trpc.useMutation(["auth.superlogout"], {
+    onSettled,
+    onSuccess: () => {
+      deleteAccessTokenInfo();
+      deleteRefreshTokenInfo();
+    },
+  });
 
   return (
     <>
@@ -108,7 +115,15 @@ const Home: NextPage = () => {
         >
           Refresh Tokens
         </button>
-        <button onClick={async () => {}}>Super Logout</button>
+        <button
+          onClick={async () => {
+            const refreshToken = getRefreshTokenInfo();
+            if (!refreshToken) return;
+            superlogout.mutate();
+          }}
+        >
+          Super Logout
+        </button>
       </div>
       <pre>
         <code>{JSON.stringify(result, null, 4)}</code>
